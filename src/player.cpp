@@ -39,7 +39,8 @@ Vector2 Player::getPosition() {
 }
 
 void Player::loadTexture() {
-    this->texture = LoadTexture("assets/textures/player.png");
+    std::string filePath = "assets/players/textures/" + this->name + ".png";
+    this->texture = LoadTexture(filePath.c_str());
 }
 
 void Player::unloadTexture() {

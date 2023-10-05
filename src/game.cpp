@@ -11,6 +11,9 @@ Game::Game(int width, int height) {
     SetConfigFlags(FLAG_WINDOW_HIGHDPI); // DPI
     InitWindow(this->width, this->height, "Keto");
     SetTargetFPS(60);
+
+    // Load map
+    this->map.load("assets/map/map.txt");
 }
 
 Game::~Game() {
@@ -35,14 +38,17 @@ void Game::render() {
 }
 
 void Game::draw() {
+    this->map.draw();
     this->player.draw();
 }
 
 void Game::loadTextures() {
+    this->map.loadTextures();
     this->player.loadTexture();
 }
 
 void Game::unloadTextures() {
+    this->map.unloadTextures();
     this->player.unloadTexture();
 }
 

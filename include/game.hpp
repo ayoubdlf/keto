@@ -1,11 +1,13 @@
 #pragma once
 #include "player.hpp"
+#include "map.hpp"
 
 class Game {
     private:
         int width;
         int height;
         Player player;
+        Map map;
         void draw();
         void unloadTextures();
     public:

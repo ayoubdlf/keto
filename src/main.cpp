@@ -1,9 +1,6 @@
 #include <raylib.h>
 #include "../include/game.hpp"
 
-// #define WIDTH 800
-// #define HEIGHT 800
-
 #define WIDTH 640
 #define HEIGHT 320
 
