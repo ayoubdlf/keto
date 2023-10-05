@@ -1,0 +1,51 @@
+#include <iostream>
+#include <raylib.h>
+#include "../include/game.hpp"
+
+Game::Game(int width, int height) {
+    this->width = width;
+    this->height = height;
+
+    // Init window
+    SetTraceLogLevel(LOG_WARNING); // remove annoying logging
+    SetConfigFlags(FLAG_WINDOW_HIGHDPI); // DPI
+    InitWindow(this->width, this->height, "Keto");
+    SetTargetFPS(60);
+}
+
+Game::~Game() {
+    this->clean();
+}
+
+void Game::input() {
+    this->player.handleInputs();
+}
+
+void Game::update() {
+    // this->player.update();
+}
+
+void Game::render() {
+    BeginDrawing();
+
+        ClearBackground(RAYWHITE);
+        this->draw();
+    
+    EndDrawing();
+}
+
+void Game::draw() {
+    this->player.draw();
+}
+
+void Game::loadTextures() {
+    this->player.loadTexture();
+}
+
+void Game::unloadTextures() {
+    this->player.unloadTexture();
+}
+
+void Game::clean() {
+    this->unloadTextures();
+}
