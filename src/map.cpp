@@ -12,21 +12,19 @@ Map::~Map() {
 void Map::draw() {
     for (int i = 0; i < this->tilesMap.size(); i++) {
         for (int j = 0; j < this->tilesMap[i].size(); j++) {
-            DrawTexture(this->tilesMap[i][j].texture, (int)this->tilesMap[i][j].pos.x, (int)this->tilesMap[i][j].pos.y, RAYWHITE);
+            DrawTexture(this->tilesMap[i][j].texture, this->tilesMap[i][j].pos.x, this->tilesMap[i][j].pos.y, RAYWHITE);
         }
     }
 }
 
 void Map::loadTiles() {
-    this->tilesMap.resize(this->height + 1, std::vector<utils::Tile>(this->width + 1));
+    this->tilesMap.resize(this->map.size(), std::vector<Tile>(this->map[0].size()));
 
     for (int i = 0; i < this->map.size(); i++) {
         for (int j = 0; j < this->map[i].size(); j++) {
-            int index = utils::findIndexById(this->map[i][j], this->textures);
-            if(index != -1) {
-                Vector2 pos = {(float)j * TILE_SIZE, (float)i * TILE_SIZE};
-                this->tilesMap[i][j] = {this->textures[index].texture, pos};
-            }
+            int index = findIndexById(this->map[i][j], this->textures);
+            Position pos = { j * TILE_SIZE, i * TILE_SIZE };
+            this->tilesMap[i][j] = { this->textures[index].texture, pos };
         }
     }
 
@@ -34,12 +32,12 @@ void Map::loadTiles() {
 
 void Map::loadTextures() {
 
-    int max = utils::getMax(this->map);
+    int max = getMax(this->map);
     std::vector<int> tilesIds; // here we're going to store unique `tiles id` found in the map file
 
     for (int i = 0; i < map.size(); i++) {
         for (int j = 0; j < map[i].size(); j++) {
-            if (!utils::isInsideVect(map[i][j], tilesIds)) {
+            if (!isInsideVect(map[i][j], tilesIds)) {
                 tilesIds.push_back(map[i][j]);
             }
         }
@@ -48,7 +46,7 @@ void Map::loadTextures() {
     this->textures.resize(tilesIds.size());
 
     for (int i = 0; i < tilesIds.size(); i++) {
-        std::string tilePath = "assets/map/tiles/" + utils::addZeros(tilesIds[i], max) + ".png";
+        std::string tilePath = "assets/map/tiles/" + addZeros(tilesIds[i], max) + ".png";
         this->textures[i] = { tilesIds[i], LoadTexture(tilePath.c_str())};
     }
 
@@ -61,9 +59,9 @@ void Map::load(std::string filepath) {
 
     if (!file.is_open()) assert(false && "[!] Unable to open map file");
 
-    utils::getMapSize(&file, &this->width, &this->height);
-    this->map.resize(this->height + 1, std::vector<int>(this->width + 1));
-    utils::mapToVector(&file, &this->map);
+    getMapSize(&file, &this->width, &this->height);
+    mapToVector(&file, &this->map);
+
     file.close();
 }
 

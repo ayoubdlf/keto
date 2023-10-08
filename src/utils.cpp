@@ -1,12 +1,5 @@
 #include "../include/utils.hpp"
 
-void utils::print(std::vector<int> tab) {
-  for (int i = 0; i < tab.size(); i++) {
-    std::cout << tab[i] << ", ";
-  }
-  std::cout << std::endl;
-}
-
 void utils::getMapSize(std::ifstream *file, int *width, int *height) {
     std::string line;
     getline(*file, line);
@@ -14,30 +7,20 @@ void utils::getMapSize(std::ifstream *file, int *width, int *height) {
     *height = stoi(line.substr(line.find(" ") + 1, line.length()));
 }
 
-void utils::mapToVector(std::ifstream *file, std::vector<std::vector<int>> *vect) {
+void utils::mapToVector(std::ifstream *file, std::vector<std::vector<int>> *map) {
     std::string line;
-    int delim = 0;
-    int i = 0, j = 0;
 
     while (getline(*file, line)) {
-        /*
-        * Example of the code above for each line:
-        *   input :  line = "01 02 03 04 05", delimeter=" "
-        *   output:  vect = <1, 2, 3, 4, 5>
-        */
+        std::istringstream iss(line);
+        std::vector<int> line;
+        int tile;
 
-        while (line.length() != 0 && delim != -1) {
-            delim = line.find(" ");
-            (*vect)[i][j] = stoi(line.substr(0, delim));
-            line = line.substr(delim+1, line.length());
-            j++;
+        while (iss >> tile) {
+            line.push_back(tile);
         }
 
-        delim = 0;
-        j = 0;
-        i++;
+        (*map).push_back(line);
     }
-
 }
 
 int utils::getMax(std::vector<std::vector<int>> vect) {

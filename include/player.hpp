@@ -1,10 +1,15 @@
-#pragma once
+#ifndef PLAYER_HPP
+#define PLAYER_HPP
+
 #include <iostream>
 #include <raylib.h>
+#include "utils.hpp"
+
+using namespace utils;
 
 class Player {
     private:
-        Vector2 position;
+        Position position = {0, 0};
         std::string name;
         Texture2D texture;
         float speed = 2.5f;
@@ -13,7 +18,10 @@ class Player {
         ~Player();
         void draw();
         void handleInputs();
-        Vector2 getPosition();
+        Position getPosition();
         void loadTexture();
         void unloadTexture();
 };
+
+
+#endif // PLAYER_HPP

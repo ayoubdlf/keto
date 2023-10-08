@@ -4,8 +4,6 @@
 
 Player::Player(std::string name) {
     this->name = name;
-    this->position.x = 0;
-    this->position.y = 0;
 }
 
 Player::~Player() {
@@ -34,7 +32,7 @@ void Player::handleInputs() {
     }
 }
 
-Vector2 Player::getPosition() {
+Position Player::getPosition() {
     return this->position;
 }
 

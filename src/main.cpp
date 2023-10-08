@@ -1,9 +1,6 @@
 #include <raylib.h>
 #include "../include/game.hpp"
 
-#define WIDTH 640
-#define HEIGHT 320
-
 int main() {
 
     Game game = Game(WIDTH, HEIGHT);

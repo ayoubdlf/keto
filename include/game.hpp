@@ -1,6 +1,9 @@
-#pragma once
+#ifndef GAME_HPP
+#define GAME_HPP
+
 #include "player.hpp"
 #include "map.hpp"
+#include "utils.hpp"
 
 class Game {
     private:
@@ -19,3 +22,6 @@ class Game {
         void loadTextures();
         void clean();
 };
+
+
+#endif // GAME_HPP
