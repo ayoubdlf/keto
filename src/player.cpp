@@ -14,25 +14,31 @@ void Player::draw() {
     DrawTexture(this->texture, this->position.x, this->position.y, BLACK);
 }
 
-void Player::handleInputs() {
-    if (IsKeyDown(KEY_RIGHT)) {
-        this->position.x += this->speed;
-    }
-
-    if (IsKeyDown(KEY_LEFT)) {
-        this->position.x -= this->speed;
-    }
-
-    if (IsKeyDown(KEY_UP)) {
-        this->position.y -= this->speed;
-    }
-
-    if (IsKeyDown(KEY_DOWN)) {
-        this->position.y += this->speed;
-    }
+void Player::update() {
+    this->position.x += this->velocity.x;
+    this->position.y += this->velocity.y;
 }
 
-Position Player::getPosition() {
+void Player::handleInputs() {
+    this->velocity = {0, 0};
+
+    if (IsKeyDown(KEY_RIGHT) && this->position.x + TILE_SIZE < WIDTH) {
+        this->velocity.x = this->speed;
+    }
+    if(IsKeyDown(KEY_LEFT) && this->position.x > 0) {
+        this->velocity.x = -this->speed;
+    }
+    if (IsKeyDown(KEY_UP) && this->position.y > 0) {
+        this->velocity.y = -this->speed;
+    }
+    if(IsKeyDown(KEY_DOWN) && this->position.y + TILE_SIZE < HEIGHT) {
+        this->velocity.y = this->speed;
+    }
+
+}
+
+
+Vector2 Player::getPosition() {
     return this->position;
 }
 

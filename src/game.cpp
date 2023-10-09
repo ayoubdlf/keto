@@ -23,7 +23,7 @@ void Game::input() {
 }
 
 void Game::update() {
-    // this->player.update();
+    this->player.update();
 }
 
 void Game::render() {

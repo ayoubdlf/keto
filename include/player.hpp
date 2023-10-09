@@ -9,16 +9,18 @@ using namespace utils;
 
 class Player {
     private:
-        Position position = {0, 0};
+        Vector2 position = {0.0f, 0.0f};
+        Vector2 velocity = {0.0f, 0.0f};
+        float speed = 2.5f;
         std::string name;
         Texture2D texture;
-        float speed = 2.5f;
     public:
         Player(std::string name="keto");
         ~Player();
-        void draw();
         void handleInputs();
-        Position getPosition();
+        void draw();
+        void update();
+        Vector2 getPosition();
         void loadTexture();
         void unloadTexture();
 };
