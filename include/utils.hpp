@@ -16,14 +16,14 @@
 
 namespace utils {
 
-    struct Position {
-        int x;
-        int y;
-    };
+    // struct Position {
+    //     int x;
+    //     int y;
+    // };
 
     struct Tile {
         Texture2D texture;
-        Position pos;
+        Vector2 pos;
     };
 
     struct Texture {

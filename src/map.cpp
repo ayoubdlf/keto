@@ -23,7 +23,7 @@ void Map::loadTiles() {
     for (int i = 0; i < this->map.size(); i++) {
         for (int j = 0; j < this->map[i].size(); j++) {
             int index = findIndexById(this->map[i][j], this->textures);
-            Position pos = { j * TILE_SIZE, i * TILE_SIZE };
+            Vector2 pos = { j * TILE_SIZE, i * TILE_SIZE };
             this->tilesMap[i][j] = { this->textures[index].texture, pos };
         }
     }
