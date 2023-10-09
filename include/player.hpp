@@ -20,6 +20,7 @@ class Player {
         void handleInputs();
         void draw();
         void update();
+        void isColliding(bool isColliding);
         Vector2 getPosition();
         void loadTexture();
         void unloadTexture();

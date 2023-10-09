@@ -17,14 +17,25 @@ void Map::draw() {
     }
 }
 
+std::vector<std::vector<Tile>> Map::getMap() {
+    return this->tilesMap;
+}
+
 void Map::loadTiles() {
     this->tilesMap.resize(this->map.size(), std::vector<Tile>(this->map[0].size()));
 
     for (int i = 0; i < this->map.size(); i++) {
         for (int j = 0; j < this->map[i].size(); j++) {
             int index = findIndexById(this->map[i][j], this->textures);
-            Vector2 pos = { j * TILE_SIZE, i * TILE_SIZE };
-            this->tilesMap[i][j] = { this->textures[index].texture, pos };
+            Vector2 pos = { float(j * TILE_SIZE), float(i * TILE_SIZE) };
+            utils::TileType type = utils::getTileTypeByCode(this->map[i][j]);
+
+            this->tilesMap[i][j] = {
+                .texture = this->textures[index].texture,
+                .pos = pos,
+                .type = type
+            };
+            
         }
     }
 

@@ -24,6 +24,7 @@ void Game::input() {
 
 void Game::update() {
     this->player.update();
+    this->collisions();
 }
 
 void Game::render() {
@@ -38,6 +39,20 @@ void Game::render() {
 void Game::draw() {
     this->map.draw();
     this->player.draw();
+}
+
+void Game::collisions() {
+
+    Sprite player = {
+        .position = this->player.getPosition(),
+        .width = TILE_SIZE,
+        .height = TILE_SIZE
+    };
+
+    if(isColliding(player, this->map.getMap())) {
+        this->player.isColliding(true);
+        std::cout << "[+]"<< std::endl;
+    }
 }
 
 void Game::loadTextures() {

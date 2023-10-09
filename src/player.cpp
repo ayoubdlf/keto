@@ -42,6 +42,10 @@ Vector2 Player::getPosition() {
     return this->position;
 }
 
+void Player::isColliding(bool isColliding) {
+    if(isColliding) { this->velocity = {0.0f, 0.0f}; }
+}
+
 void Player::loadTexture() {
     std::string filePath = "assets/players/textures/" + this->name + ".png";
     this->texture = LoadTexture(filePath.c_str());

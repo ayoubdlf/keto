@@ -69,3 +69,42 @@ int utils::findIndexById(int id, std::vector<utils::Texture> vect) {
 
     return -1;    
 }
+
+utils::TileType utils::getTileTypeByCode(int code) {
+    if(code == 0) { return utils::Air; }
+    if(code != 0) { return utils::Obstacle; }
+
+    return utils::Error; // It will fire i know
+}
+
+bool utils::isColliding(Sprite sprite, std::vector<std::vector<Tile>> map) {
+
+    bool collision = false;
+
+    Rectangle playerRec = {
+        sprite.position.x,
+        sprite.position.y,
+        sprite.width,
+        sprite.width
+    };
+
+    for (int i = 0; i < map.size(); i++) {
+        for (int j = 0; j < map[j].size(); j++) {
+            if (utils::getTileTypeByCode(map[i][j].type) == utils::Obstacle) {
+                
+                Rectangle obstacle = {
+                    (float)(j * TILE_SIZE),
+                    (float)(i * TILE_SIZE),
+                    sprite.width,
+                    sprite.height
+                };
+
+                if (CheckCollisionRecs(playerRec, obstacle)) { collision = true; }
+
+            }
+        }
+    }
+
+    return collision;
+    
+}

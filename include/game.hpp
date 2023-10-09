@@ -12,6 +12,7 @@ class Game {
         Player player;
         Map map;
         void draw();
+        void collisions();
         void unloadTextures();
     public:
         Game(int width, int height);

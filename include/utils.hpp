@@ -21,9 +21,22 @@ namespace utils {
     //     int y;
     // };
 
+    struct Sprite {
+        Vector2 position;
+        float width;
+        float height;
+    };
+
+    enum TileType {
+        Air = 0,
+        Obstacle = 1,
+        Error = -1
+    };
+
     struct Tile {
         Texture2D texture;
         Vector2 pos;
+        utils::TileType type;
     };
 
     struct Texture {
@@ -63,6 +76,16 @@ namespace utils {
     *   Finds in which index `id` is, -1 otherwise
     */
     int findIndexById(int id, std::vector<utils::Texture> textureVect);
+
+    /*
+    *   Get value in map // TODO: comment in a clear way
+    */
+    utils::TileType getTileTypeByCode(int code);
+
+    /*
+    *   Check if sprite is colliding with an obstacle
+    */
+    bool isColliding(Sprite sprite, std::vector<std::vector<Tile>> map);
 }
 
 
