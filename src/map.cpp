@@ -17,8 +17,8 @@ void Map::draw() {
     }
 }
 
-std::vector<std::vector<Tile>> Map::getMap() {
-    return this->tilesMap;
+std::vector<std::vector<Tile>>* Map::getMap() {
+    return &this->tilesMap;
 }
 
 void Map::loadTiles() {

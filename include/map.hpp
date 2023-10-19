@@ -22,7 +22,7 @@ class Map {
         void loadTextures();
         void unloadTextures();
         void draw();
-        std::vector<std::vector<Tile>> getMap();
+        std::vector<std::vector<Tile>> *getMap();
 };
 
 

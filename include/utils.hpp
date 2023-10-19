@@ -12,6 +12,7 @@
 #define TILE_SIZE 32
 #define MAP_WIDTH (WIDTH/TILE_SIZE)
 #define MAP_HEIGHT (HEIGHT/TILE_SIZE)
+#define GRAVITY 5.0f
 //  END DEFINES
 
 namespace utils {
@@ -20,6 +21,15 @@ namespace utils {
     //     int x;
     //     int y;
     // };
+
+    struct Destination {
+        bool left;
+        bool right;
+        bool up;
+        bool down;
+        float x;
+        float y;
+    };
 
     struct Sprite {
         Vector2 position;
@@ -85,7 +95,7 @@ namespace utils {
     /*
     *   Check if sprite is colliding with an obstacle
     */
-    bool isColliding(Sprite sprite, std::vector<std::vector<Tile>> map);
+    bool isColliding(Sprite sprite, std::vector<std::vector<Tile>> *map);
 }
 
 

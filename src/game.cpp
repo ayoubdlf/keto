@@ -23,8 +23,8 @@ void Game::input() {
 }
 
 void Game::update() {
-    this->player.update();
     this->collisions();
+    this->player.update();
 }
 
 void Game::render() {
@@ -43,15 +43,10 @@ void Game::draw() {
 
 void Game::collisions() {
 
-    Sprite player = {
-        .position = this->player.getPosition(),
-        .width = TILE_SIZE,
-        .height = TILE_SIZE
-    };
+    Vector2 playerDest = this->player.getDestination();
 
-    if(isColliding(player, this->map.getMap())) {
-        this->player.isColliding(true);
-        std::cout << "[+]"<< std::endl;
+    if(isColliding(this->player.getRect(playerDest), this->map.getMap())) {
+        this->player.colliding();
     }
 }
 
