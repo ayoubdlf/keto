@@ -9,6 +9,7 @@ class Game {
     private:
         Player player;
         Map map;
+        Camera2D camera;
         void draw();
         void collisions();
         void unloadTextures();

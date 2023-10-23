@@ -12,6 +12,10 @@ Game::Game(int width, int height) {
 
     // Load map
     this->map.load("assets/map/map.txt");
+
+    this->camera.offset = (Vector2){ width/2.0f, height/2.0f };
+    this->camera.zoom = 0.8f;
+    this->camera.rotation = 0.0f;
 }
 
 Game::~Game() {
@@ -23,6 +27,7 @@ void Game::input() {
 }
 
 void Game::update() {
+    this->camera.target = this->player.getPosition();
     this->player.update();
     this->collisions();
 }
@@ -37,8 +42,10 @@ void Game::render() {
 }
 
 void Game::draw() {
-    this->map.draw();
-    this->player.draw();
+    BeginMode2D(this->camera);
+        this->map.draw();
+        this->player.draw();
+    EndMode2D();
 }
 
 void Game::collisions() {
