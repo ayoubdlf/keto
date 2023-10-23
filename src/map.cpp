@@ -17,8 +17,12 @@ void Map::draw() {
     }
 }
 
-std::vector<std::vector<Tile>>* Map::getMap() {
-    return &this->tilesMap;
+// std::vector<std::vector<Tile>>* Map::getMap() {
+//     return &this->tilesMap;
+// }
+
+std::vector<Tile>* Map::getObstacle() {
+    return &this->obstacles;
 }
 
 void Map::loadTiles() {
@@ -35,6 +39,10 @@ void Map::loadTiles() {
                 .pos = pos,
                 .type = type
             };
+
+            if(this->tilesMap[i][j].type == Obstacle) {
+                this->obstacles.push_back(this->tilesMap[i][j]);
+            }
             
         }
     }

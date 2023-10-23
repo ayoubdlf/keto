@@ -7,35 +7,19 @@
 #include <raylib.h>
 
 //  START DEFINES
-#define WIDTH 640
-#define HEIGHT 320
-#define TILE_SIZE 32
-#define MAP_WIDTH (WIDTH/TILE_SIZE)
-#define MAP_HEIGHT (HEIGHT/TILE_SIZE)
-#define GRAVITY 5.0f
+#define WIDTH        640
+#define HEIGHT       320
+#define TILE_SIZE    32
+#define MAP_WIDTH    (WIDTH/TILE_SIZE)
+#define MAP_HEIGHT   (HEIGHT/TILE_SIZE)
+#define SCALE        100.0f
+#define DELTA        0.01
+#define GRAVITY      80.0f * DELTA
+#define X_VELOCITY   7.0f
+#define Y_VELOCITY   X_VELOCITY * 2.5
 //  END DEFINES
 
 namespace utils {
-
-    // struct Position {
-    //     int x;
-    //     int y;
-    // };
-
-    struct Destination {
-        bool left;
-        bool right;
-        bool up;
-        bool down;
-        float x;
-        float y;
-    };
-
-    struct Sprite {
-        Vector2 position;
-        float width;
-        float height;
-    };
 
     enum TileType {
         Air = 0,
@@ -91,11 +75,6 @@ namespace utils {
     *   Get value in map // TODO: comment in a clear way
     */
     utils::TileType getTileTypeByCode(int code);
-
-    /*
-    *   Check if sprite is colliding with an obstacle
-    */
-    bool isColliding(Sprite sprite, std::vector<std::vector<Tile>> *map);
 }
 
 

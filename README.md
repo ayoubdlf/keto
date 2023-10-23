@@ -51,6 +51,7 @@ Run it and have fun! 👾
 
 
 
-<!-- ## TODO
+## TODO
 
-- [ ] TESTS -->
+- [ ] Comment 😪
+- [ ] Make sure we unloaded and cleaned everything

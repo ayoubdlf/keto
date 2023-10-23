@@ -7,8 +7,6 @@
 
 class Game {
     private:
-        int width;
-        int height;
         Player player;
         Map map;
         void draw();

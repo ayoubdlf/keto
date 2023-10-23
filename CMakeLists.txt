@@ -1,23 +1,17 @@
 cmake_minimum_required(VERSION 3.26.4)
 set(CMAKE_CXX_STANDARD 17)
 project("KETO")
+include(FetchContent)
 
-# Checking if raylib is install otherwise the cmake will
-find_package(raylib REQUIRED)
-if (NOT raylib_FOUND)
-   include(FetchContent)
-
+find_package(raylib QUIET)
+if(NOT raylib_FOUND)
    FetchContent_Declare(
       raylib
-      URL https://github.com/raysan5/raylib/archive/master.tar.gz
+      GIT_REPOSITORY https://github.com/raysan5/raylib.git
+      GIT_TAG        master
+      EXCLUDE_FROM_ALL
    )
-
-   FetchContent_GetProperties(raylib)
-   if (NOT raylib_POPULATED)
-      FetchContent_Populate(raylib)
-      add_subdirectory(${raylib_SOURCE_DIR} ${raylib_BINARY_DIR})
-   endif()
-
+   FetchContent_MakeAvailable(raylib)
 endif()
 
 file(GLOB SOURCES "src/*.cpp")
@@ -26,5 +20,6 @@ add_executable(keto.out ${SOURCES})
 
 target_link_libraries(keto.out raylib)
 target_include_directories(keto.out PRIVATE include ${raylib_SOURCE_DIR}/include)
+# target_compile_options(keto.out PRIVATE -Wall)
 
 # cmake -B build && cmake --build build && ./build/keto.out

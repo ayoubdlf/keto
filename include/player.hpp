@@ -9,11 +9,9 @@ using namespace utils;
 
 class Player {
     private:
-        Vector2 position = {0.0f, 0.0f};
-        Vector2 velocity = {0.0f, 0.0f};
-        Destination destination;
-        float speed = 2.5f;
-        bool isColliding;
+        Vector2 position;
+        Vector2 velocity;
+        bool isJumping;
         std::string name;
         Texture2D texture;
     public:
@@ -22,10 +20,9 @@ class Player {
         void handleInputs();
         void draw();
         void update();
-        void colliding();
+        void isColliding(std::string axis, float value);
         Vector2 getPosition();
-        Vector2 getDestination();
-        Sprite getRect(Vector2 position);
+        Vector2 getVelocity();
         void loadTexture();
         void unloadTexture();
 };

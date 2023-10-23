@@ -23,8 +23,8 @@ void Game::input() {
 }
 
 void Game::update() {
-    this->collisions();
     this->player.update();
+    this->collisions();
 }
 
 void Game::render() {
@@ -43,11 +43,30 @@ void Game::draw() {
 
 void Game::collisions() {
 
-    Vector2 playerDest = this->player.getDestination();
-
-    if(isColliding(this->player.getRect(playerDest), this->map.getMap())) {
-        this->player.colliding();
+    // X AXIS COLLISIONS
+    for (Tile obstacle : *(this->map.getObstacle())) {
+        Rectangle tile   = {obstacle.pos.x, obstacle.pos.y, TILE_SIZE, TILE_SIZE};
+        Rectangle player = {this->player.getPosition().x, this->player.getPosition().y - this->player.getVelocity().y, TILE_SIZE, TILE_SIZE};
+        
+        if (CheckCollisionRecs(player, tile)) {
+            this->player.isColliding("xAxis", tile.x);
+            break;
+        }
+        
     }
+
+    // Y AXIS COLLISIONS
+    for (Tile obstacle : *(this->map.getObstacle())) {
+        Rectangle tile   = {obstacle.pos.x, obstacle.pos.y, TILE_SIZE, TILE_SIZE};
+        Rectangle player = {this->player.getPosition().x, this->player.getPosition().y, TILE_SIZE, TILE_SIZE};
+        
+        if (CheckCollisionRecs(player, tile)) {
+            this->player.isColliding("yAxis", tile.y);
+            break;
+        }
+        
+    }
+
 }
 
 void Game::loadTextures() {

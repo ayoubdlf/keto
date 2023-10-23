@@ -3,7 +3,10 @@
 #include "../include/player.hpp"
 
 Player::Player(std::string name) {
-    this->name = name;
+    this->name      = name;
+    this->position  = {0.0f, 0.0f};
+    this->velocity  = {0.0f, 0.0f};
+    this->isJumping = false;
 }
 
 Player::~Player() {
@@ -15,39 +18,17 @@ void Player::draw() {
 }
 
 void Player::update() {
-    this->position.x = this->destination.x;
-    this->position.y = this->destination.y;
+    this->velocity.y += GRAVITY;
+    this->position.x += this->velocity.x;
+    this->position.y += this->velocity.y;
 }
 
 void Player::handleInputs() {
-    this->velocity    = { this->velocity.x, this->velocity.y }; // TODO: check of there is bug doing this
-    this->isColliding = false;
-    this->destination = { false, false, false, false, this->position.x, this->position.y };
-    
-    this->destination.right = IsKeyDown(KEY_RIGHT) && this->position.x + TILE_SIZE < WIDTH;
-    this->destination.left  = IsKeyDown(KEY_LEFT) && this->position.x > 0;
-    this->destination.up    = IsKeyDown(KEY_UP) && this->position.y > 0;
-    this->destination.down  = IsKeyDown(KEY_DOWN) && this->position.y + TILE_SIZE < HEIGHT;
+    this->velocity = {0.0f, this->velocity.y};
 
-    if(this->destination.left)  {
-        this->velocity.x    = -this->speed;
-        this->destination.x = this->position.x + this->velocity.x;
-    }
-
-    if(this->destination.right) {
-        this->velocity.x    = this->speed;
-        this->destination.x = this->position.x + this->velocity.x;
-    }
-
-    if(this->destination.up)    {
-        this->velocity.y    = -this->speed;
-        this->destination.y = this->position.y + this->velocity.y;
-    }
-
-    if(this->destination.down)  {
-        this->velocity.y    = this->speed;
-        this->destination.y = this->position.y + this->velocity.y;
-    }
+    if(IsKeyDown(KEY_RIGHT))                  { this->velocity.x =  X_VELOCITY * DELTA * SCALE; }
+    if(IsKeyDown(KEY_LEFT))                   { this->velocity.x = -X_VELOCITY * DELTA * SCALE; }
+    if(IsKeyDown(KEY_UP) && !this->isJumping) { this->velocity.y = -Y_VELOCITY * DELTA * SCALE; this->isJumping = true; }
 
 }
 
@@ -55,24 +36,31 @@ Vector2 Player::getPosition() {
     return this->position;
 }
 
-Sprite Player::getRect(Vector2 position) {
-    return {
-        .position = position,
-        .width = TILE_SIZE,
-        .height = TILE_SIZE
-    };
+Vector2 Player::getVelocity() {
+    return this->velocity;
 }
 
-Vector2 Player::getDestination() {
-    return { this->destination.x, this->destination.y };
-}
+void Player::isColliding(std::string axis, float value) {
 
-void Player::colliding() {
-    this->velocity   = { 0.0f, 0.0f }; // TODO: are we going to use velocity ?
-    this->isColliding = true;
+    if(axis == "xAxis") {
+        this->velocity.x = 0;
+        this->position.x = (this->position.x > value) ? value + TILE_SIZE : value - TILE_SIZE;
+    }
+    
+    if(axis == "yAxis") {
+        // Head (collisions with the player head)
+        if (this->velocity.y < 0) {
+            this->velocity.y = 0;
+            this->position.y = value + TILE_SIZE;
+        }
 
-    this->destination.x = this->position.x;
-    this->destination.y = this->position.y;
+        // Feet (collisions with the player feets)
+        if (this->velocity.y > 0) {
+            this->velocity.y = 0;
+            this->position.y = value - TILE_SIZE;
+            this->isJumping = false;
+        }
+    }
 
 }
 

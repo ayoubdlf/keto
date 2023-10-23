@@ -76,33 +76,3 @@ utils::TileType utils::getTileTypeByCode(int code) {
 
     return utils::Error; // It will fire i know
 }
-
-bool utils::isColliding(Sprite sprite, std::vector<std::vector<Tile>> *map) {
-
-    Rectangle playerRec = {
-        sprite.position.x,
-        sprite.position.y,
-        sprite.width,
-        sprite.height
-    };
-
-    for (int i = 0; i < (*map).size(); i++) {
-        for (int j = 0; j < (*map)[i].size(); j++) {
-            if ((*map)[i][j].type == utils::Obstacle) {
-                
-                Rectangle obstacle = {
-                    (*map)[i][j].pos.x,
-                    (*map)[i][j].pos.y,
-                    sprite.width,
-                    sprite.height
-                };
-
-                if (CheckCollisionRecs(playerRec, obstacle)) { return true; }
-
-            }
-        }
-    }
-
-    return false;
-    
-}
