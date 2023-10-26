@@ -20,6 +20,6 @@ add_executable(keto.out ${SOURCES})
 
 target_link_libraries(keto.out raylib)
 target_include_directories(keto.out PRIVATE include ${raylib_SOURCE_DIR}/include)
-# target_compile_options(keto.out PRIVATE -Wall)
+target_compile_options(keto.out PRIVATE -Wall -Werror)
 
 # cmake -B build && cmake --build build && ./build/keto.out

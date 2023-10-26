@@ -1,5 +1,6 @@
 #include <iostream>
 #include <raylib.h>
+#include <raymath.h>
 #include "../include/game.hpp"
 
 Game::Game(int width, int height) {
@@ -10,24 +11,45 @@ Game::Game(int width, int height) {
     InitWindow(width, height, "Keto");
     SetTargetFPS(60);
 
-    // Load map
+    // Init player
+    this->player.setPlayer();
+
+    // Init map
     this->map.load("assets/map/map.txt");
 
-    this->camera.offset = (Vector2){ width/2.0f, height/2.0f };
-    this->camera.zoom = 0.8f;
+    this->camera.offset = { width/2.0f, height/2.0f };
+    this->camera.zoom = ZOOM;
     this->camera.rotation = 0.0f;
 }
 
-Game::~Game() {
-    this->clean();
-}
+Game::~Game() {}
 
 void Game::input() {
     this->player.handleInputs();
 }
 
+void Game::updateCamera() {
+
+    // Old version :
+    // this->camera.target = this->player.getPosition();
+   
+    // New Smoother one :
+    float minSpeed        = 80;
+    float minEffectLength = 20;
+    float fractionSpeed   = Y_VELOCITY;
+
+    this->camera.offset = { WIDTH/2.0f, HEIGHT/2.0f };
+    Vector2 diff        = Vector2Subtract(this->player.getPosition(), this->camera.target);
+    float length        = Vector2Length(diff);
+
+    if (length > minEffectLength) {
+        float speed = fmaxf(fractionSpeed * length, minSpeed);
+        this->camera.target = Vector2Add(this->camera.target, Vector2Scale(diff, speed*DELTA/length));
+    }
+}
+
 void Game::update() {
-    this->camera.target = this->player.getPosition();
+    this->updateCamera();
     this->player.update();
     this->collisions();
 }
@@ -78,14 +100,5 @@ void Game::collisions() {
 
 void Game::loadTextures() {
     this->map.loadTextures();
-    this->player.loadTexture();
-}
-
-void Game::unloadTextures() {
-    this->map.unloadTextures();
-    this->player.unloadTexture();
-}
-
-void Game::clean() {
-    this->unloadTextures();
+    this->player.loadTextures();
 }

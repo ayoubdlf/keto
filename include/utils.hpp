@@ -7,20 +7,21 @@
 #include <raylib.h>
 
 //  START DEFINES
-#define WIDTH        640
-#define HEIGHT       320
-#define TILE_SIZE    32
-#define MAP_WIDTH    (WIDTH/TILE_SIZE)
-#define MAP_HEIGHT   (HEIGHT/TILE_SIZE)
-#define SCALE        100.0f
-#define DELTA        0.01
-#define GRAVITY      80.0f * DELTA
-#define X_VELOCITY   7.0f
-#define Y_VELOCITY   X_VELOCITY * 2.5
+#define WIDTH          640
+#define HEIGHT         320
+#define TILE_SIZE      32
+#define SCALE          100.0f
+#define DELTA          0.01
+#define GRAVITY        80.0f * DELTA
+#define X_VELOCITY     5.0f
+#define Y_VELOCITY     X_VELOCITY * 2.8
+#define ZOOM           1.2f
+#define X_FRAME_SPEED  12
+#define Y_FRAME_SPEED  X_FRAME_SPEED * 2
 //  END DEFINES
 
 namespace utils {
-
+    
     enum TileType {
         Air = 0,
         Obstacle = 1,

@@ -7,24 +7,45 @@
 
 using namespace utils;
 
+enum Action {
+    Nothing = 0,
+    Idle    = 1,
+    Run     = 2,
+    Jump    = 3
+};
+
+struct PlayerTexture {
+    Texture2D texture;
+    Rectangle frames;
+};
+
 class Player {
     private:
         Vector2 position;
         Vector2 velocity;
         bool isJumping;
         std::string name;
-        Texture2D texture;
+
+        int action; // What's the player doing: idle, running, jumping...
+        std::string direction; // Left or Right only
+        int currentFrame;
+        int framesCounter;
+        int framesSpeed;
+        std::array<PlayerTexture, 4> textures;
+
+        PlayerTexture loadPlayerTexture(std::string path);
     public:
-        Player(std::string name="keto");
+        Player();
         ~Player();
+        void setPlayer(std::string name="keto");
         void handleInputs();
         void draw();
         void update();
         void isColliding(std::string axis, float value);
         Vector2 getPosition();
         Vector2 getVelocity();
-        void loadTexture();
-        void unloadTexture();
+        void loadTextures();
+        void unloadTextures();
 };
 
 

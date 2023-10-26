@@ -12,15 +12,14 @@ class Game {
         Camera2D camera;
         void draw();
         void collisions();
-        void unloadTextures();
     public:
         Game(int width, int height);
         ~Game();
         void input();
         void update();
         void render();
+        void updateCamera();
         void loadTextures();
-        void clean();
 };
 
 

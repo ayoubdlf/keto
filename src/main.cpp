@@ -14,9 +14,8 @@ int main() {
         game.render();
 
     }
-
-    game.clean();
-    CloseWindow();
     
-    return 0;
+    CloseWindow();
+        
+    return EXIT_SUCCESS;
 }
