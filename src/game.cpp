@@ -2,6 +2,7 @@
 #include <raylib.h>
 #include <raymath.h>
 #include "../include/game.hpp"
+#include "../include/camera.hpp"
 
 Game::Game(int width, int height) {
 
@@ -17,9 +18,10 @@ Game::Game(int width, int height) {
     // Init map
     this->map.load("assets/map/map.txt");
 
-    this->camera.offset = { width/2.0f, height/2.0f };
-    this->camera.zoom = ZOOM;
-    this->camera.rotation = 0.0f;
+    // Init camera
+    CameraSingleton::getInstance()->getCamera().offset   = { width/2.0f, height/2.0f };
+    CameraSingleton::getInstance()->getCamera().zoom     = ZOOM;
+    CameraSingleton::getInstance()->getCamera().rotation = 0.0f;
 }
 
 Game::~Game() {}
@@ -31,20 +33,20 @@ void Game::input() {
 void Game::updateCamera() {
 
     // Old version :
-    // this->camera.target = this->player.getPosition();
+    // CameraSingleton::getInstance()->getCamera().target = this->player.getPosition();
    
     // New Smoother one :
     float minSpeed        = 80;
     float minEffectLength = 20;
     float fractionSpeed   = Y_VELOCITY;
 
-    this->camera.offset = { WIDTH/2.0f, HEIGHT/2.0f };
-    Vector2 diff        = Vector2Subtract(this->player.getPosition(), this->camera.target);
-    float length        = Vector2Length(diff);
+    CameraSingleton::getInstance()->getCamera().offset = { WIDTH/2.0f, HEIGHT/2.0f };
+    Vector2 diff  = Vector2Subtract(this->player.getPosition(), CameraSingleton::getInstance()->getCamera().target);
+    float length  = Vector2Length(diff);
 
     if (length > minEffectLength) {
         float speed = fmaxf(fractionSpeed * length, minSpeed);
-        this->camera.target = Vector2Add(this->camera.target, Vector2Scale(diff, speed*DELTA/length));
+        CameraSingleton::getInstance()->getCamera().target = Vector2Add(CameraSingleton::getInstance()->getCamera().target, Vector2Scale(diff, speed*DELTA/length));
     }
 }
 
@@ -64,7 +66,7 @@ void Game::render() {
 }
 
 void Game::draw() {
-    BeginMode2D(this->camera);
+    BeginMode2D(CameraSingleton::getInstance()->getCamera());
         this->map.draw();
         this->player.draw();
     EndMode2D();

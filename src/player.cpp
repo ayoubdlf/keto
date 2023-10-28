@@ -6,11 +6,14 @@ Player::Player() {
     this->position      = {0.0f, 0.0f};
     this->velocity      = {0.0f, 0.0f};
     this->isJumping     = false;
-    this->action        = Action::Nothing;
+    this->action        = Nothing;
     this->currentFrame  = 0;
     this->framesCounter = 0;
     this->framesSpeed   = X_FRAME_SPEED; 
-    this->direction     = "Right";
+    this->direction     = Right;
+    this->looking       = Right;
+    
+    this->weapon.useWeapon(Weapons::Nothing);
 }
 
 Player::~Player() {
@@ -22,8 +25,10 @@ void Player::setPlayer(std::string name) {
 }
 
 void Player::draw() {
+
+    // PLAYER
     Rectangle source = this->textures[this->action].frames;
-    if(this->direction == "Left") { source.width = -source.width; }
+    if(this->direction == Left) { source.width = -source.width; }
 
     DrawTextureRec(
         this->textures[this->action].texture,
@@ -31,14 +36,16 @@ void Player::draw() {
         this->position,
         RAYWHITE
     );
-    
+
+    /* Weapon */
+    this->weapon.draw(this->direction, this->looking);
 }
 
 void Player::update() {
     this->velocity.y    += GRAVITY;
     this->position.x    += this->velocity.x;
     this->position.y    += this->velocity.y;
-    this->framesCounter += 1; 
+    this->framesCounter += 1;
 
     if (this->framesCounter >= (60 / this->framesSpeed)) {
         this->framesCounter = 0;
@@ -47,17 +54,26 @@ void Player::update() {
 
     // Update texture X
     this->textures[this->action].frames.x = this->currentFrame * TILE_SIZE;
+
+    /* Weapon */
+    this->weapon.setPosition(this->position);
 }
 
 void Player::handleInputs() {
     this->velocity    = {0.0f, this->velocity.y};
-    this->action      = Action::Idle;
+    this->action      = Idle;
     this->framesSpeed = X_FRAME_SPEED;
+    Vector2 mouse     = GetScreenToWorld2D(GetMousePosition(), CameraSingleton::getInstance()->getCamera());
+    this->looking     = (mouse.x >= this->position.x) ? Right : Left;
+    this->direction   = this->looking;
 
-    if(IsKeyDown(KEY_RIGHT))                  { this->velocity.x =  X_VELOCITY * DELTA * SCALE; this->action = ::Action::Run;  this->direction = "Right"; }
-    if(IsKeyDown(KEY_LEFT))                   { this->velocity.x = -X_VELOCITY * DELTA * SCALE; this->action = ::Action::Run;  this->direction = "Left";  }
-    if(IsKeyDown(KEY_UP) && !this->isJumping) { this->velocity.y = -Y_VELOCITY * DELTA * SCALE; this->action = ::Action::Jump; this->isJumping = true; this->framesSpeed = Y_FRAME_SPEED; }
+    if(IsKeyDown(KEY_RIGHT))                  { this->velocity.x =  X_VELOCITY * DELTA * SCALE; this->action = Run;  this->direction = Right; }
+    if(IsKeyDown(KEY_LEFT))                   { this->velocity.x = -X_VELOCITY * DELTA * SCALE; this->action = Run;  this->direction = Left;  }
+    if(IsKeyDown(KEY_UP) && !this->isJumping) { this->velocity.y = -Y_VELOCITY * DELTA * SCALE; this->action = Jump; this->isJumping = true; this->framesSpeed = Y_FRAME_SPEED; }
 
+    if(IsKeyDown(KEY_N)) { this->weapon.useWeapon(Weapons::Nothing); this->weapon.setPosition({ this->position.x, this->position.y }); }
+    if(IsKeyDown(KEY_G)) { this->weapon.useWeapon(Weapons::Gun)    ; this->weapon.setPosition({ this->position.x, this->position.y }); }
+    if(IsKeyDown(KEY_S)) { this->weapon.useWeapon(Weapons::Sword)  ; this->weapon.setPosition({ this->position.x, this->position.y }); }
 }
 
 Vector2 Player::getPosition() {
@@ -92,7 +108,7 @@ void Player::isColliding(std::string axis, float value) {
 
 }
 
-PlayerTexture Player::loadPlayerTexture(std::string path) {
+ActionTexture Player::loadActionTexture(std::string path) {
     Texture2D texture = LoadTexture(path.c_str());
     
     return {
@@ -108,7 +124,6 @@ PlayerTexture Player::loadPlayerTexture(std::string path) {
 }
 
 void Player::loadTextures() {
-
     // TODO: create a function that handles all of that
     std::string nothing = "assets/players/" + this->name + "/" + this->name + ".png";
     std::string idle    = "assets/players/" + this->name + "/idle.png";
@@ -116,14 +131,14 @@ void Player::loadTextures() {
     std::string jump    = "assets/players/" + this->name + "/jump.png";
 
     // TODO: I think there is another easy implementatin of that
-    textures[::Action::Nothing] = loadPlayerTexture(nothing);
-    textures[::Action::Idle]    = loadPlayerTexture(idle);
-    textures[::Action::Run]     = loadPlayerTexture(run);
-    textures[::Action::Jump]    = loadPlayerTexture(jump);
+    this->textures[Nothing] = loadActionTexture(nothing);
+    this->textures[Idle]    = loadActionTexture(idle);
+    this->textures[Run]     = loadActionTexture(run);
+    this->textures[Jump]    = loadActionTexture(jump);
 }
 
 void Player::unloadTextures() {
-    for(PlayerTexture playerTexture : this->textures) {
-        UnloadTexture(playerTexture.texture);
+    for(ActionTexture ActionTexture : this->textures) {
+        UnloadTexture(ActionTexture.texture);
     }
 }

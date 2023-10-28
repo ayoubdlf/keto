@@ -18,10 +18,17 @@
 #define ZOOM           1.2f
 #define X_FRAME_SPEED  12
 #define Y_FRAME_SPEED  X_FRAME_SPEED * 2
+#define NB_WEAPONS     3
 //  END DEFINES
 
+
 namespace utils {
-    
+
+    enum Direction {
+        Left  = 0,
+        Right = 1
+    };
+        
     enum TileType {
         Air = 0,
         Obstacle = 1,

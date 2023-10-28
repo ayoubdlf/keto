@@ -4,12 +4,12 @@
 #include "player.hpp"
 #include "map.hpp"
 #include "utils.hpp"
+#include "../include/camera.hpp"
 
 class Game {
     private:
         Player player;
         Map map;
-        Camera2D camera;
         void draw();
         void collisions();
     public:

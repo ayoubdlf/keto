@@ -3,18 +3,17 @@
 
 #include <iostream>
 #include <raylib.h>
-#include "utils.hpp"
+#include "weapon.hpp"
 
 using namespace utils;
 
 enum Action {
-    Nothing = 0,
     Idle    = 1,
     Run     = 2,
     Jump    = 3
 };
 
-struct PlayerTexture {
+struct ActionTexture {
     Texture2D texture;
     Rectangle frames;
 };
@@ -25,15 +24,21 @@ class Player {
         Vector2 velocity;
         bool isJumping;
         std::string name;
-
-        int action; // What's the player doing: idle, running, jumping...
-        std::string direction; // Left or Right only
+        
+        /*  Player  */
+        int action; // idle, running, jumping
+        Direction direction; // Player direction left or right
+        Direction looking;   // Player looking at the left or right
         int currentFrame;
         int framesCounter;
         int framesSpeed;
-        std::array<PlayerTexture, 4> textures;
+        std::array<ActionTexture, 4> textures;
 
-        PlayerTexture loadPlayerTexture(std::string path);
+        /*  Weapon  */
+        Weapon weapon;
+
+        /*  Functions  */
+        ActionTexture loadActionTexture(std::string path);
     public:
         Player();
         ~Player();

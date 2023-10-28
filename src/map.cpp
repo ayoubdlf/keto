@@ -1,5 +1,4 @@
 #include "../include/map.hpp"
-#include "../include/utils.hpp"
 #include <fstream>
 #include <cassert>
 
