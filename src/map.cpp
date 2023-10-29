@@ -2,7 +2,18 @@
 #include <fstream>
 #include <cassert>
 
-Map::Map() {}
+Map* Map::getInstance() {
+    if (instance == nullptr) { instance = new Map(); }
+    return instance;
+}
+
+std::vector<Tile>& Map::getObstacles() {
+    return this->obstacles;
+}
+
+Map* Map::instance = nullptr;
+
+// MAP Methods
 
 Map::~Map() {
     this->unloadTextures();
@@ -20,9 +31,9 @@ void Map::draw() {
 //     return &this->tilesMap;
 // }
 
-std::vector<Tile>* Map::getObstacle() {
-    return &this->obstacles;
-}
+// std::vector<Tile>* Map::getObstacle() {
+//     return &this->obstacles;
+// }
 
 void Map::loadTiles() {
     this->tilesMap.resize(this->map.size(), std::vector<Tile>(this->map[0].size()));
@@ -30,14 +41,18 @@ void Map::loadTiles() {
     for (int i = 0; i < this->map.size(); i++) {
         for (int j = 0; j < this->map[i].size(); j++) {
             int index = findIndexById(this->map[i][j], this->textures);
-            Vector2 pos = { float(j * TILE_SIZE), float(i * TILE_SIZE) };
+
+            Vector2 pos = { float(j * this->textures[index].texture.width), float(i * this->textures[index].texture.height) };
             utils::TileType type = utils::getTileTypeByCode(this->map[i][j]);
 
             this->tilesMap[i][j] = {
-                .texture = this->textures[index].texture,
                 .pos = pos,
                 .type = type
             };
+
+            if(this->tilesMap[i][j].type == Obstacle) {
+                this->tilesMap[i][j].texture = this->textures[index].texture;
+            }
 
             if(this->tilesMap[i][j].type == Obstacle) {
                 this->obstacles.push_back(this->tilesMap[i][j]);
@@ -51,23 +66,22 @@ void Map::loadTiles() {
 void Map::loadTextures() {
 
     int max = getMax(this->map);
-    std::vector<int> tilesIds; // here we're going to store unique `tiles id` found in the map file
+    std::vector<int> tilesNumber; // here we're going to store unique `tile numbers` found in the map file
 
     for (int i = 0; i < map.size(); i++) {
         for (int j = 0; j < map[i].size(); j++) {
-            if (!isInsideVect(map[i][j], tilesIds)) {
-                tilesIds.push_back(map[i][j]);
+            if (map[i][j] != 0 && !isInsideVect(map[i][j], tilesNumber)) {
+                tilesNumber.push_back(map[i][j]);
             }
         }
     }
 
-    this->textures.resize(tilesIds.size());
+    this->textures.resize(tilesNumber.size());
 
-    for (int i = 0; i < tilesIds.size(); i++) {
-        std::string tilePath = "assets/map/tiles/" + addZeros(tilesIds[i], max) + ".png";
-        this->textures[i] = { tilesIds[i], LoadTexture(tilePath.c_str())};
+    for (int i = 0; i < tilesNumber.size(); i++) {
+        std::string tilePath = "assets/map/tiles/" + addZeros(tilesNumber[i], max) + ".png";
+        this->textures[i] = { tilesNumber[i], LoadTexture(tilePath.c_str())};
     }
-
     this->loadTiles();
 }
 
@@ -77,7 +91,6 @@ void Map::load(std::string filepath) {
 
     if (!file.is_open()) assert(false && "[!] Unable to open map file");
 
-    getMapSize(&file, &this->width, &this->height);
     mapToVector(&file, &this->map);
 
     file.close();

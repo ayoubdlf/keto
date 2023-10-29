@@ -3,7 +3,7 @@
 #include "../include/player.hpp"
 
 Player::Player() {
-    this->position      = {0.0f, 0.0f};
+    this->position      = {100.0f, 10.0f};
     this->velocity      = {0.0f, 0.0f};
     this->isJumping     = false;
     this->action        = Nothing;
@@ -18,6 +18,14 @@ Player::Player() {
 
 Player::~Player() {
     this->unloadTextures();
+}
+
+float Player::getWidth() {
+    return this->width;
+}
+
+float Player::getHeight() {
+    return this->height;
 }
 
 void Player::setPlayer(std::string name) {
@@ -49,14 +57,18 @@ void Player::update() {
 
     if (this->framesCounter >= (60 / this->framesSpeed)) {
         this->framesCounter = 0;
-        this->currentFrame  = (this->currentFrame + 1) % (this->textures[this->action].texture.width / TILE_SIZE + 1); // (this->textures[this->action].texture.width / TILE_SIZE) is the number of frames in the texture 
+        this->currentFrame  = (this->currentFrame + 1) % int(this->textures[this->action].texture.width / this->width + 1); // (this->textures[this->action].texture.width / this->width) is the number of frames in the texture 
     }
 
     // Update texture X
-    this->textures[this->action].frames.x = this->currentFrame * TILE_SIZE;
+    this->textures[this->action].frames.x = this->currentFrame * this->width;
 
     /* Weapon */
     this->weapon.setPosition(this->position);
+
+    /* Collisions */
+    this->handleCollisions();
+
 }
 
 void Player::handleInputs() {
@@ -84,40 +96,61 @@ Vector2 Player::getVelocity() {
     return this->velocity;
 }
 
-void Player::isColliding(std::string axis, float value) {
-
-    if(axis == "xAxis") {
-        this->velocity.x = 0;
-        this->position.x = (this->position.x > value) ? value + TILE_SIZE : value - TILE_SIZE;
-    }
+void Player::handleCollisions() {
     
-    if(axis == "yAxis") {
-        // Head (collisions with the player head)
-        if (this->velocity.y < 0) {
-            this->velocity.y = 0;
-            this->position.y = value + TILE_SIZE;
+    // X AXIS COLLISIONS
+    for (Tile obstacle : Map::getInstance()->getObstacles()) {
+        Rectangle tile   = {obstacle.pos.x, obstacle.pos.y, (float)obstacle.texture.width, (float)obstacle.texture.height};
+        Rectangle player = {this->position.x, this->position.y - this->velocity.y, this->width, this->height};
+        
+        if (CheckCollisionRecs(player, tile)) {
+            this->velocity.x = 0;
+            this->position.x = (this->position.x > tile.x) ? tile.x + this->width : tile.x - this->width;
+            break;
         }
+        
+    }
 
-        // Feet (collisions with the player feets)
-        if (this->velocity.y > 0) {
-            this->velocity.y = 0;
-            this->position.y = value - TILE_SIZE;
-            this->isJumping = false;
+    // Y AXIS COLLISIONS
+    for (Tile obstacle : Map::getInstance()->getObstacles()) {
+        Rectangle tile   = {obstacle.pos.x, obstacle.pos.y, (float)obstacle.texture.width, (float)obstacle.texture.height};
+        Rectangle player = {this->position.x, this->position.y, this->width, this->height};
+        
+        if (CheckCollisionRecs(player, tile)) {
+            // Head (collisions with the player head)
+            if (this->velocity.y < 0) {
+                this->velocity.y = 0;
+                this->position.y = tile.y + this->height;
+            }
+
+            // Feet (collisions with the player feets)
+            if (this->velocity.y > 0) {
+                this->velocity.y = 0;
+                this->position.y = tile.y - this->height;
+                this->isJumping = false;
+            }
+            break;
         }
+        
     }
 
 }
 
 ActionTexture Player::loadActionTexture(std::string path) {
     Texture2D texture = LoadTexture(path.c_str());
-    
+
+    if(strstr(path.c_str(), this->name.c_str())) {
+        this->width  =  this->textures[Nothing].texture.width;
+        this->height =  this->textures[Nothing].texture.height;
+    }
+
     return {
         .texture = texture,
         .frames  = {
             0.0f,
             0.0f,
-            TILE_SIZE,
-            TILE_SIZE
+            this->width,
+            this->height
         }
     };
 

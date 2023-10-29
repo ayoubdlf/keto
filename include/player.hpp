@@ -4,6 +4,7 @@
 #include <iostream>
 #include <raylib.h>
 #include "weapon.hpp"
+#include "map.hpp"
 
 using namespace utils;
 
@@ -20,6 +21,8 @@ struct ActionTexture {
 
 class Player {
     private:
+        float width;
+        float height;
         Vector2 position;
         Vector2 velocity;
         bool isJumping;
@@ -39,14 +42,16 @@ class Player {
 
         /*  Functions  */
         ActionTexture loadActionTexture(std::string path);
+        void handleCollisions();
     public:
         Player();
         ~Player();
+        float getWidth();
+        float getHeight();
         void setPlayer(std::string name="keto");
         void handleInputs();
         void draw();
         void update();
-        void isColliding(std::string axis, float value);
         Vector2 getPosition();
         Vector2 getVelocity();
         void loadTextures();

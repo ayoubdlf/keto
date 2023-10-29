@@ -16,7 +16,7 @@ Game::Game(int width, int height) {
     this->player.setPlayer();
 
     // Init map
-    this->map.load("assets/map/map.txt");
+    Map::getInstance()->load("assets/map/map.txt");
 
     // Init camera
     CameraSingleton::getInstance()->getCamera().offset   = { width/2.0f, height/2.0f };
@@ -53,7 +53,6 @@ void Game::updateCamera() {
 void Game::update() {
     this->updateCamera();
     this->player.update();
-    this->collisions();
 }
 
 void Game::render() {
@@ -67,40 +66,12 @@ void Game::render() {
 
 void Game::draw() {
     BeginMode2D(CameraSingleton::getInstance()->getCamera());
-        this->map.draw();
+        Map::getInstance()->draw();
         this->player.draw();
     EndMode2D();
 }
 
-void Game::collisions() {
-
-    // X AXIS COLLISIONS
-    for (Tile obstacle : *(this->map.getObstacle())) {
-        Rectangle tile   = {obstacle.pos.x, obstacle.pos.y, TILE_SIZE, TILE_SIZE};
-        Rectangle player = {this->player.getPosition().x, this->player.getPosition().y - this->player.getVelocity().y, TILE_SIZE, TILE_SIZE};
-        
-        if (CheckCollisionRecs(player, tile)) {
-            this->player.isColliding("xAxis", tile.x);
-            break;
-        }
-        
-    }
-
-    // Y AXIS COLLISIONS
-    for (Tile obstacle : *(this->map.getObstacle())) {
-        Rectangle tile   = {obstacle.pos.x, obstacle.pos.y, TILE_SIZE, TILE_SIZE};
-        Rectangle player = {this->player.getPosition().x, this->player.getPosition().y, TILE_SIZE, TILE_SIZE};
-        
-        if (CheckCollisionRecs(player, tile)) {
-            this->player.isColliding("yAxis", tile.y);
-            break;
-        }
-        
-    }
-
-}
-
 void Game::loadTextures() {
-    this->map.loadTextures();
+    Map::getInstance()->loadTextures();
     this->player.loadTextures();
 }

@@ -55,3 +55,4 @@ Run it and have fun! 👾
 
 - [ ] Comment 😪
 - [ ] Make sure we unloaded and cleaned everything
+- [ ] Assert

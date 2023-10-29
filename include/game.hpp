@@ -9,9 +9,7 @@
 class Game {
     private:
         Player player;
-        Map map;
         void draw();
-        void collisions();
     public:
         Game(int width, int height);
         ~Game();

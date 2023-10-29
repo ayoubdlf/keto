@@ -9,7 +9,6 @@
 //  START DEFINES
 #define WIDTH          640
 #define HEIGHT         320
-#define TILE_SIZE      32
 #define SCALE          100.0f
 #define DELTA          0.01
 #define GRAVITY        80.0f * DELTA
@@ -45,11 +44,6 @@ namespace utils {
         int id;
         Texture2D texture;
     };
-    
-    /*
-    *   Gets map width and height
-    */
-    void getMapSize(std::ifstream *file, int *width, int *height);
     
     /*
     *   Saves map file data to vector

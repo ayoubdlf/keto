@@ -1,12 +1,5 @@
 #include "../include/utils.hpp"
 
-void utils::getMapSize(std::ifstream *file, int *width, int *height) {
-    std::string line;
-    getline(*file, line);
-    *width = stoi(line.substr(0, line.find(" ")));
-    *height = stoi(line.substr(line.find(" ") + 1, line.length()));
-}
-
 void utils::mapToVector(std::ifstream *file, std::vector<std::vector<int>> *map) {
     std::string line;
 

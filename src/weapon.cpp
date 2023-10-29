@@ -27,8 +27,8 @@ void Weapon::throwWeapon() {
 
 void Weapon::drawGun(Direction direction, Direction look) {
     Vector2   pos    = { this->position.x, this->position.y };
-    Rectangle source = { 0.0f, 0.0f, TILE_SIZE, TILE_SIZE };
-    Rectangle dest   = { pos.x + (TILE_SIZE * 0.5f), pos.y + (TILE_SIZE * 0.65f), TILE_SIZE, TILE_SIZE };
+    Rectangle source = { 0.0f, 0.0f, (float)this->texture.width, (float)this->texture.height };
+    Rectangle dest   = { pos.x + (this->texture.width * 0.5f), pos.y + (this->texture.height * 0.65f), (float)this->texture.width, (float)this->texture.height };
     Vector2   origin = { 2.0f, 14.0f };
     // OR Vector2   origin = { dest.width * 0.07f, dest.height * 0.47f };
 
@@ -45,8 +45,8 @@ void Weapon::drawGun(Direction direction, Direction look) {
 
 void Weapon::drawSword(Direction direction, Direction look) {
     Vector2   pos    = { this->position.x, this->position.y };
-    Rectangle source = { 0.0f, 0.0f, TILE_SIZE, TILE_SIZE };
-    Rectangle dest   = { pos.x + (TILE_SIZE * 0.5f), pos.y + (TILE_SIZE * 0.65f), TILE_SIZE * 0.8, TILE_SIZE * 0.8 };
+    Rectangle source = { 0.0f, 0.0f, (float)this->texture.width, (float)this->texture.height };
+    Rectangle dest   = { pos.x + (this->texture.width * 0.5f), pos.y + (this->texture.height * 0.65f), this->texture.width * 0.8f, this->texture.height * 0.8f };
     Vector2   origin = { 1.56f, 22.65f };
     // OR Vector2   origin = { dest.x * 0.06f, dest.y * 0.88f };
 
