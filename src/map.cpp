@@ -3,15 +3,11 @@
 #include <cassert>
 
 Map* Map::getInstance() {
-    if (instance == nullptr) { instance = new Map(); }
+    if (instance == 0) { instance = new Map(); }
     return instance;
 }
 
-std::vector<Tile>& Map::getObstacles() {
-    return this->obstacles;
-}
-
-Map* Map::instance = nullptr;
+Map* Map::instance = 0;
 
 // MAP Methods
 
@@ -27,13 +23,9 @@ void Map::draw() {
     }
 }
 
-// std::vector<std::vector<Tile>>* Map::getMap() {
-//     return &this->tilesMap;
-// }
-
-// std::vector<Tile>* Map::getObstacle() {
-//     return &this->obstacles;
-// }
+std::vector<Tile>& Map::getObstacles() {
+    return this->obstacles;
+}
 
 void Map::loadTiles() {
     this->tilesMap.resize(this->map.size(), std::vector<Tile>(this->map[0].size()));

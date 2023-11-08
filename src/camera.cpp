@@ -2,7 +2,7 @@
 
 
 CameraSingleton* CameraSingleton::getInstance() {
-    if (instance == nullptr) { instance = new CameraSingleton(); }
+    if (instance == 0) { instance = new CameraSingleton(); }
     return instance;
 }
 
@@ -10,4 +10,4 @@ Camera2D& CameraSingleton::getCamera() {
     return this->camera;
 }
 
-CameraSingleton* CameraSingleton::instance = nullptr;
+CameraSingleton* CameraSingleton::instance = 0;

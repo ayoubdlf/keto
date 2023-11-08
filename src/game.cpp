@@ -2,7 +2,6 @@
 #include <raylib.h>
 #include <raymath.h>
 #include "../include/game.hpp"
-#include "../include/camera.hpp"
 
 Game::Game(int width, int height) {
 
@@ -31,11 +30,6 @@ void Game::input() {
 }
 
 void Game::updateCamera() {
-
-    // Old version :
-    // CameraSingleton::getInstance()->getCamera().target = this->player.getPosition();
-   
-    // New Smoother one :
     float minSpeed        = 80;
     float minEffectLength = 20;
     float fractionSpeed   = Y_VELOCITY;

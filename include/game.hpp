@@ -1,14 +1,15 @@
 #ifndef GAME_HPP
 #define GAME_HPP
 
-#include "player.hpp"
-#include "map.hpp"
 #include "utils.hpp"
-#include "../include/camera.hpp"
+#include "player.hpp"
+#include "camera.hpp"
+#include "map.hpp"
 
 class Game {
     private:
         Player player;
+        Map map;
         void draw();
     public:
         Game(int width, int height);
