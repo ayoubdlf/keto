@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.26.4)
+cmake_minimum_required(VERSION 3.16.3)
 set(CMAKE_CXX_STANDARD 17)
 project("KETO")
 include(FetchContent)
@@ -20,6 +20,7 @@ add_executable(keto.out ${SOURCES})
 
 target_link_libraries(keto.out raylib)
 target_include_directories(keto.out PRIVATE include ${raylib_SOURCE_DIR}/include)
-target_compile_options(keto.out PRIVATE -Wall -Werror)
+target_compile_options(keto.out PRIVATE)
+# target_compile_options(keto.out PRIVATE -Wall -Werror)
 
 # cmake -B build && cmake --build build && ./build/keto.out

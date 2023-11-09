@@ -2,7 +2,9 @@
 #include <raylib.h>
 #include "../include/weapon.hpp"
 
-Weapon::Weapon() {}
+Weapon::Weapon() {
+    this->type = Nothing;
+}
 
 Weapon::~Weapon() {
     this->unloadTexture();
@@ -82,6 +84,7 @@ void Weapon::loadTexture() {
 }
 
 void Weapon::unloadTexture() {
+    // TODO: FIX SEG ERROR
     if(this->type != Nothing) {
         UnloadTexture(this->texture);
     }

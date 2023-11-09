@@ -5,6 +5,12 @@
 #include <fstream>
 #include <sstream>
 #include <raylib.h>
+#include <vector>
+#include <array>
+#include <cstring>
+#include <cmath>
+
+
 
 //  START DEFINES
 #define WIDTH          640

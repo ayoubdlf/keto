@@ -171,7 +171,9 @@ void Player::loadTextures() {
 }
 
 void Player::unloadTextures() {
-    for(ActionTexture ActionTexture : this->textures) {
-        UnloadTexture(ActionTexture.texture);
-    }
+    // TODO: UNLOAD TEXTURES AND FIX SEG FAULT
+
+    // for(ActionTexture ActionTexture : this->textures) {
+    //     UnloadTexture(ActionTexture.texture);
+    // }
 }
