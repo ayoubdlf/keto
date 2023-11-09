@@ -1,10 +1,10 @@
 #include <iostream>
 #include <raylib.h>
+#include <stack>
+#include <cmath>
 #include "../include/weapon.hpp"
 
-Weapon::Weapon() {
-    this->type = Nothing;
-}
+Weapon::Weapon() {}
 
 Weapon::~Weapon() {
     this->unloadTexture();
@@ -84,8 +84,32 @@ void Weapon::loadTexture() {
 }
 
 void Weapon::unloadTexture() {
-    // TODO: FIX SEG ERROR
     if(this->type != Nothing) {
         UnloadTexture(this->texture);
     }
 }
+
+// Creating the stack that'll store all the ammo
+void Weapon::createStack(){
+
+    std::stack<int> maPile;
+
+    //Setting all munition
+    for(int i =0; i< MAX_AMMO; i++){
+        maPile.push(i);
+    }
+
+    this->myStack = maPile;
+}
+
+bool Weapon::isEmpty(){
+    
+    if(this->myStack.empty()){
+
+        return true;
+
+    }else{
+
+        return false;
+    }
+}  

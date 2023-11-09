@@ -24,6 +24,7 @@
 #define X_FRAME_SPEED  12
 #define Y_FRAME_SPEED  X_FRAME_SPEED * 2
 #define NB_WEAPONS     3
+#define MAX_AMMO 10
 //  END DEFINES
 
 
