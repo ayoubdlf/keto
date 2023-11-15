@@ -3,6 +3,7 @@
 
 #include <iostream>
 #include <raylib.h>
+#include <array>
 #include "weapon.hpp"
 #include "map.hpp"
 
@@ -55,7 +56,6 @@ class Player {
         Vector2 getPosition();
         Vector2 getVelocity();
         void loadTextures();
-        void unloadTextures();
 };
 
 

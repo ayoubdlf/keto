@@ -16,9 +16,7 @@ Player::Player() {
     this->weapon.useWeapon(Weapons::Nothing);
 }
 
-Player::~Player() {
-    this->unloadTextures();
-}
+Player::~Player() {}
 
 float Player::getWidth() {
     return this->width;
@@ -99,7 +97,7 @@ Vector2 Player::getVelocity() {
 void Player::handleCollisions() {
     
     // X AXIS COLLISIONS
-    for (Tile obstacle : Map::getInstance()->getObstacles()) {
+    for(Tile obstacle : Map::getInstance()->getObstacles()) {
         Rectangle tile   = {obstacle.pos.x, obstacle.pos.y, (float)obstacle.texture.width, (float)obstacle.texture.height};
         Rectangle player = {this->position.x, this->position.y - this->velocity.y, this->width, this->height};
         
@@ -112,7 +110,7 @@ void Player::handleCollisions() {
     }
 
     // Y AXIS COLLISIONS
-    for (Tile obstacle : Map::getInstance()->getObstacles()) {
+    for(Tile obstacle : Map::getInstance()->getObstacles()) {
         Rectangle tile   = {obstacle.pos.x, obstacle.pos.y, (float)obstacle.texture.width, (float)obstacle.texture.height};
         Rectangle player = {this->position.x, this->position.y, this->width, this->height};
         
@@ -168,12 +166,4 @@ void Player::loadTextures() {
     this->textures[Idle]    = loadActionTexture(idle);
     this->textures[Run]     = loadActionTexture(run);
     this->textures[Jump]    = loadActionTexture(jump);
-}
-
-void Player::unloadTextures() {
-    // TODO: UNLOAD TEXTURES AND FIX SEG FAULT
-
-    // for(ActionTexture ActionTexture : this->textures) {
-    //     UnloadTexture(ActionTexture.texture);
-    // }
 }

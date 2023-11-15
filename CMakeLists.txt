@@ -8,7 +8,7 @@ if(NOT raylib_FOUND)
    FetchContent_Declare(
       raylib
       GIT_REPOSITORY https://github.com/raysan5/raylib.git
-      GIT_TAG        master
+      GIT_TAG        4.5.0
       EXCLUDE_FROM_ALL
    )
    FetchContent_MakeAvailable(raylib)
@@ -20,7 +20,7 @@ add_executable(keto.out ${SOURCES})
 
 target_link_libraries(keto.out raylib)
 target_include_directories(keto.out PRIVATE include ${raylib_SOURCE_DIR}/include)
-target_compile_options(keto.out PRIVATE)
-# target_compile_options(keto.out PRIVATE -Wall -Werror)
+target_compile_options(keto.out PRIVATE -Wall -Werror)
 
 # cmake -B build && cmake --build build && ./build/keto.out
+# cmake -B build && cmake --build build && valgrind ./build/keto.out --track-origins=yes --leak-check=full > log.txt 2>&1

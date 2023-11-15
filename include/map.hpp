@@ -25,7 +25,6 @@ class Map {
         
         void load(std::string filepath);
         void loadTextures();
-        void unloadTextures();
         void draw();
 };
 

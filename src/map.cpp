@@ -11,13 +11,11 @@ Map* Map::instance = 0;
 
 // MAP Methods
 
-Map::~Map() {
-    this->unloadTextures();
-}
+Map::~Map() {}
 
 void Map::draw() {
-    for (int i = 0; i < this->tilesMap.size(); i++) {
-        for (int j = 0; j < this->tilesMap[i].size(); j++) {
+    for(int i = 0; i < (int)this->tilesMap.size(); i++) {
+        for(int j = 0; j < (int)this->tilesMap[i].size(); j++) {
             DrawTexture(this->tilesMap[i][j].texture, this->tilesMap[i][j].pos.x, this->tilesMap[i][j].pos.y, RAYWHITE);
         }
     }
@@ -30,24 +28,29 @@ std::vector<Tile>& Map::getObstacles() {
 void Map::loadTiles() {
     this->tilesMap.resize(this->map.size(), std::vector<Tile>(this->map[0].size()));
 
-    for (int i = 0; i < this->map.size(); i++) {
-        for (int j = 0; j < this->map[i].size(); j++) {
+    for(int i = 0; i < (int)this->map.size(); i++) {
+        for(int j = 0; j < (int)this->map[i].size(); j++) {
+
             int index = findIndexById(this->map[i][j], this->textures);
 
-            Vector2 pos = { float(j * this->textures[index].texture.width), float(i * this->textures[index].texture.height) };
-            utils::TileType type = utils::getTileTypeByCode(this->map[i][j]);
+            if(index != -1) {
 
-            this->tilesMap[i][j] = {
-                .pos = pos,
-                .type = type
-            };
+                Vector2 pos = { float(j * this->textures[index].texture.width), float(i * this->textures[index].texture.height) };
+                utils::TileType type = utils::getTileTypeByCode(this->map[i][j]);
+            
+                this->tilesMap[i][j] = {
+                    .pos = pos,
+                    .type = type
+                };
 
-            if(this->tilesMap[i][j].type == Obstacle) {
-                this->tilesMap[i][j].texture = this->textures[index].texture;
-            }
+                if(this->tilesMap[i][j].type != Air) {
+                    this->tilesMap[i][j].texture = this->textures[index].texture;
+                }
 
-            if(this->tilesMap[i][j].type == Obstacle) {
-                this->obstacles.push_back(this->tilesMap[i][j]);
+                if(this->tilesMap[i][j].type == Obstacle) {
+                    this->obstacles.push_back(this->tilesMap[i][j]);
+                }
+
             }
             
         }
@@ -60,8 +63,8 @@ void Map::loadTextures() {
     int max = getMax(this->map);
     std::vector<int> tilesNumber; // here we're going to store unique `tile numbers` found in the map file
 
-    for (int i = 0; i < map.size(); i++) {
-        for (int j = 0; j < map[i].size(); j++) {
+    for(int i = 0; i < (int)map.size(); i++) {
+        for(int j = 0; j < (int)map[i].size(); j++) {
             if (map[i][j] != 0 && !isInsideVect(map[i][j], tilesNumber)) {
                 tilesNumber.push_back(map[i][j]);
             }
@@ -70,7 +73,7 @@ void Map::loadTextures() {
 
     this->textures.resize(tilesNumber.size());
 
-    for (int i = 0; i < tilesNumber.size(); i++) {
+    for(int i = 0; i < (int)tilesNumber.size(); i++) {
         std::string tilePath = "assets/map/tiles/" + addZeros(tilesNumber[i], max) + ".png";
         this->textures[i] = { tilesNumber[i], LoadTexture(tilePath.c_str())};
     }
@@ -86,10 +89,4 @@ void Map::load(std::string filepath) {
     mapToVector(&file, &this->map);
 
     file.close();
-}
-
-void Map::unloadTextures() {
-    for (utils::Texture texture : this->textures) {
-        UnloadTexture(texture.texture);
-    }
 }

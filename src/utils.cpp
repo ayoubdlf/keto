@@ -19,8 +19,8 @@ void utils::mapToVector(std::ifstream *file, std::vector<std::vector<int>> *map)
 int utils::getMax(std::vector<std::vector<int>> vect) {
     int max = vect[0][0];
     
-    for (int i = 0; i < vect.size(); i++) {
-        for (int j = 0; j < vect[i].size(); j++) {
+    for(int i = 0; i < (int)vect.size(); i++) {
+        for(int j = 0; j < (int)vect[i].size(); j++) {
             if(vect[i][j] > max) {
                 max = vect[i][j];
             }
@@ -35,7 +35,7 @@ std::string utils::addZeros(int number, int max) {
     int max_length = std::to_string(max).length();
     std::string std_number = std::to_string(number);
 
-    while (std_number.length() < max_length) {
+    while ((int)std_number.length() < max_length) {
         std_number.insert(0, "0");
     }
 
@@ -43,7 +43,7 @@ std::string utils::addZeros(int number, int max) {
 }
 
 bool utils::isInsideVect(int value, std::vector<int> vect) {
-    for (int val : vect) {
+    for(int val : vect) {
         if (val == value) {
             return true;
         }
@@ -54,7 +54,7 @@ bool utils::isInsideVect(int value, std::vector<int> vect) {
 
 int utils::findIndexById(int id, std::vector<utils::Texture> vect) {
 
-    for (int i = 0; i < vect.size(); i++) {
+    for(int i = 0; i < (int)vect.size(); i++) {
         if(vect[i].id == id) {
             return i;
         }
