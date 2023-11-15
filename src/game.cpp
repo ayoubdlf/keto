@@ -26,7 +26,10 @@ Game::Game(int width, int height) {
 Game::~Game() {}
 
 void Game::input() {
-    this->player.handleInputs();
+
+    if(this->player.isAlive()){
+        this->player.handleInputs();
+    }
 }
 
 void Game::updateCamera() {
@@ -46,7 +49,11 @@ void Game::updateCamera() {
 
 void Game::update() {
     this->updateCamera();
-    this->player.update();
+
+    if(this->player.isAlive()){
+        this->player.update();
+    }
+
 }
 
 void Game::render() {
@@ -61,11 +68,17 @@ void Game::render() {
 void Game::draw() {
     BeginMode2D(CameraSingleton::getInstance()->getCamera());
         Map::getInstance()->draw();
+
+    if(this->player.isAlive()){
         this->player.draw();
+    }
     EndMode2D();
 }
 
 void Game::loadTextures() {
     Map::getInstance()->loadTextures();
-    this->player.loadTextures();
+    
+    if(this->player.isAlive()){
+        this->player.loadTextures();    
+    }
 }

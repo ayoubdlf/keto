@@ -3,6 +3,7 @@
 #include "../include/player.hpp"
 
 Player::Player() {
+
     this->position      = {100.0f, 10.0f};
     this->velocity      = {0.0f, 0.0f};
     this->isJumping     = false;
@@ -14,6 +15,12 @@ Player::Player() {
     this->looking       = Right;
     
     this->weapon.useWeapon(Weapons::Nothing);
+
+    for(int i = 0; i< 9; i++){
+        
+        this->lifeBar.push(i);
+    }
+
 }
 
 Player::~Player() {}
@@ -84,6 +91,7 @@ void Player::handleInputs() {
     if(IsKeyDown(KEY_N)) { this->weapon.useWeapon(Weapons::Nothing); this->weapon.setPosition({ this->position.x, this->position.y }); }
     if(IsKeyDown(KEY_G)) { this->weapon.useWeapon(Weapons::Gun)    ; this->weapon.setPosition({ this->position.x, this->position.y }); }
     if(IsKeyDown(KEY_S)) { this->weapon.useWeapon(Weapons::Sword)  ; this->weapon.setPosition({ this->position.x, this->position.y }); }
+
 }
 
 Vector2 Player::getPosition() {
@@ -160,10 +168,28 @@ void Player::loadTextures() {
     std::string idle    = "assets/players/" + this->name + "/idle.png";
     std::string run     = "assets/players/" + this->name + "/run.png";
     std::string jump    = "assets/players/" + this->name + "/jump.png";
+    std::string death    = "assets/players/" + this->name + "/death.png";
 
     // TODO: I think there is another easy implementatin of that
     this->textures[Nothing] = loadActionTexture(nothing);
     this->textures[Idle]    = loadActionTexture(idle);
     this->textures[Run]     = loadActionTexture(run);
     this->textures[Jump]    = loadActionTexture(jump);
+    this->textures[Death]    = loadActionTexture(death);
 }
+
+bool Player::isAlive(){
+    return this->action != Death;
+}
+
+void Player::damage(){
+
+    if(!empty(this->lifeBar)){
+        this->lifeBar.pop();
+    }else{
+        this->action = Death;
+    }
+
+}
+
+

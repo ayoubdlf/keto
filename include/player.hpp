@@ -4,6 +4,7 @@
 #include <iostream>
 #include <raylib.h>
 #include <array>
+#include <stack>  
 #include "weapon.hpp"
 #include "map.hpp"
 
@@ -12,7 +13,8 @@ using namespace utils;
 enum Action {
     Idle    = 1,
     Run     = 2,
-    Jump    = 3
+    Jump    = 3,
+    Death   = 4
 };
 
 struct ActionTexture {
@@ -28,15 +30,16 @@ class Player {
         Vector2 velocity;
         bool isJumping;
         std::string name;
+        std::stack<int> lifeBar;
         
         /*  Player  */
-        int action; // idle, running, jumping
+        int action; // idle, running, jumping, death
         Direction direction; // Player direction left or right
         Direction looking;   // Player looking at the left or right
         int currentFrame;
         int framesCounter;
         int framesSpeed;
-        std::array<ActionTexture, 4> textures;
+        std::array<ActionTexture, 5> textures;
 
         /*  Weapon  */
         Weapon weapon;
@@ -56,6 +59,8 @@ class Player {
         Vector2 getPosition();
         Vector2 getVelocity();
         void loadTextures();
+        void damage();
+        bool isAlive();
 };
 
 
