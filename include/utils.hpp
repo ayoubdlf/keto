@@ -10,16 +10,18 @@
 #include <cmath>
 
 //  START DEFINES
-constexpr int   WIDTH         =   640;
-constexpr int   HEIGHT        =   320;
-constexpr float SCALE         =   100.0f;
-constexpr float DELTA         =   0.01f;
-constexpr float GRAVITY       =   80.0f * DELTA;
-constexpr float X_VELOCITY    =   5.0f;
-constexpr float Y_VELOCITY    =   X_VELOCITY * 2.8;
-constexpr float ZOOM          =   1.2f;
-constexpr int   X_FRAME_SPEED =   12;
-constexpr int   Y_FRAME_SPEED =   X_FRAME_SPEED * 2;
+constexpr int   WIDTH            =   960;
+constexpr int   HEIGHT           =   560;
+constexpr float SCALE            =   100.0f;
+constexpr float DELTA            =   0.01f;
+constexpr float GRAVITY          =   80.0f * DELTA;
+constexpr float X_VELOCITY       =   5.0f;
+constexpr float Y_VELOCITY       =   X_VELOCITY * 2.8;
+constexpr float ZOOM             =   1.2f;
+constexpr int   X_FRAME_SPEED    =   12;
+constexpr int   Y_FRAME_SPEED    =   X_FRAME_SPEED * 2;
+constexpr int   MAX_BULLETS      =   20000;
+constexpr float BULLET_VELOCITY  =   8.0f;
 //  END DEFINES
 
 

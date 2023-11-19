@@ -3,7 +3,6 @@
 #include "../include/player.hpp"
 
 Player::Player() {
-
     this->position      = {100.0f, 10.0f};
     this->velocity      = {0.0f, 0.0f};
     this->isJumping     = false;
@@ -12,15 +11,7 @@ Player::Player() {
     this->framesCounter = 0;
     this->framesSpeed   = X_FRAME_SPEED; 
     this->direction     = Right;
-    this->looking       = Right;
-    
-    this->weapon.useWeapon(Weapons::Nothing);
-
-    for(int i = 0; i< 9; i++){
-        
-        this->lifeBar.push(i);
-    }
-
+    this->heal(10);
 }
 
 Player::~Player() {}
@@ -37,21 +28,35 @@ void Player::setPlayer(std::string name) {
     this->name = name;
 }
 
+void Player::heal(int health) {    
+    this->health += health;
+}
+
+int Player::getHealth() {    
+    return this->health;
+}
+
+bool Player::isAlive() {
+    return this->action != Death;
+}
+
+void Player::damage() {
+    this->health -= 1;
+    this->action = (this->health == 0) ? Death : this->action;
+}
+
 void Player::draw() {
 
     // PLAYER
     Rectangle source = this->textures[this->action].frames;
     if(this->direction == Left) { source.width = -source.width; }
 
-    DrawTextureRec(
-        this->textures[this->action].texture,
-        source,
-        this->position,
-        RAYWHITE
-    );
+    DrawTextureRec(this->textures[this->action].texture, source, this->position, RAYWHITE);
 
-    /* Weapon */
-    this->weapon.draw(this->direction, this->looking);
+    /* Gun */
+    if(this->gun.isAvailable()) {
+        this->gun.draw();
+    }
 }
 
 void Player::update() {
@@ -68,8 +73,10 @@ void Player::update() {
     // Update texture X
     this->textures[this->action].frames.x = this->currentFrame * this->width;
 
-    /* Weapon */
-    this->weapon.setPosition(this->position);
+    /* Gun */
+    if(this->gun.isAvailable()) {
+        this->gun.update(this->position);
+    }
 
     /* Collisions */
     this->handleCollisions();
@@ -81,16 +88,18 @@ void Player::handleInputs() {
     this->action      = Idle;
     this->framesSpeed = X_FRAME_SPEED;
     Vector2 mouse     = GetScreenToWorld2D(GetMousePosition(), CameraSingleton::getInstance()->getCamera());
-    this->looking     = (mouse.x >= this->position.x) ? Right : Left;
-    this->direction   = this->looking;
+    this->direction   = (mouse.x >= this->position.x) ? Right : Left;
 
     if(IsKeyDown(KEY_RIGHT))                  { this->velocity.x =  X_VELOCITY * DELTA * SCALE; this->action = Run;  this->direction = Right; }
     if(IsKeyDown(KEY_LEFT))                   { this->velocity.x = -X_VELOCITY * DELTA * SCALE; this->action = Run;  this->direction = Left;  }
     if(IsKeyDown(KEY_UP) && !this->isJumping) { this->velocity.y = -Y_VELOCITY * DELTA * SCALE; this->action = Jump; this->isJumping = true; this->framesSpeed = Y_FRAME_SPEED; }
 
-    if(IsKeyDown(KEY_N)) { this->weapon.useWeapon(Weapons::Nothing); this->weapon.setPosition({ this->position.x, this->position.y }); }
-    if(IsKeyDown(KEY_G)) { this->weapon.useWeapon(Weapons::Gun)    ; this->weapon.setPosition({ this->position.x, this->position.y }); }
-    if(IsKeyDown(KEY_S)) { this->weapon.useWeapon(Weapons::Sword)  ; this->weapon.setPosition({ this->position.x, this->position.y }); }
+    if(IsKeyDown(KEY_N))    { if(this->gun.isAvailable()) { this->gun.throwGun(); } }
+    if(IsKeyDown(KEY_G))    { this->gun.useGun(); }
+    if(IsKeyPressed(KEY_F)) { if(this->gun.isAvailable()) { this->gun.fire(); } }
+
+    if(IsKeyPressed(KEY_H)) { this->heal(1); }
+    if(IsKeyPressed(KEY_D)) { this->damage(); }
 
 }
 
@@ -177,19 +186,3 @@ void Player::loadTextures() {
     this->textures[Jump]    = loadActionTexture(jump);
     this->textures[Death]    = loadActionTexture(death);
 }
-
-bool Player::isAlive(){
-    return this->action != Death;
-}
-
-void Player::damage(){
-
-    if(!empty(this->lifeBar)){
-        this->lifeBar.pop();
-    }else{
-        this->action = Death;
-    }
-
-}
-
-

@@ -4,13 +4,13 @@
 #include <iostream>
 #include <raylib.h>
 #include <array>
-#include <stack>  
-#include "weapon.hpp"
+#include "gun.hpp"
 #include "map.hpp"
 
 using namespace utils;
 
 enum Action {
+    Nothing = 0,
     Idle    = 1,
     Run     = 2,
     Jump    = 3,
@@ -30,19 +30,18 @@ class Player {
         Vector2 velocity;
         bool isJumping;
         std::string name;
-        std::stack<int> lifeBar;
+        int health;
         
         /*  Player  */
-        int action; // idle, running, jumping, death
+        int action; // idle, running, jumping
         Direction direction; // Player direction left or right
-        Direction looking;   // Player looking at the left or right
         int currentFrame;
         int framesCounter;
         int framesSpeed;
         std::array<ActionTexture, 5> textures;
 
-        /*  Weapon  */
-        Weapon weapon;
+        /*  Gun  */
+        Gun gun;
 
         /*  Functions  */
         ActionTexture loadActionTexture(std::string path);
@@ -59,6 +58,8 @@ class Player {
         Vector2 getPosition();
         Vector2 getVelocity();
         void loadTextures();
+        void heal(int health);
+        int getHealth();
         void damage();
         bool isAlive();
 };

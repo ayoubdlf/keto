@@ -6,8 +6,10 @@
 Game::Game(int width, int height) {
 
     // Init window
-    SetTraceLogLevel(LOG_WARNING); // remove annoying logging
-    SetConfigFlags(FLAG_WINDOW_HIGHDPI); // DPI
+    SetTraceLogLevel(LOG_WARNING);         // remove annoying logging
+    SetConfigFlags(FLAG_WINDOW_HIGHDPI);   // DPI
+    SetConfigFlags(FLAG_WINDOW_RESIZABLE); // Make resizing window possible
+    
     InitWindow(width, height, "Keto");
     SetTargetFPS(60);
 
@@ -26,8 +28,7 @@ Game::Game(int width, int height) {
 Game::~Game() {}
 
 void Game::input() {
-
-    if(this->player.isAlive()){
+    if(this->player.isAlive()) {
         this->player.handleInputs();
     }
 }
@@ -37,7 +38,7 @@ void Game::updateCamera() {
     float minEffectLength = 20;
     float fractionSpeed   = Y_VELOCITY;
 
-    CameraSingleton::getInstance()->getCamera().offset = { WIDTH/2.0f, HEIGHT/2.0f };
+    CameraSingleton::getInstance()->getCamera().offset = { GetScreenWidth()/2.0f, GetScreenHeight()/2.0f };
     Vector2 diff  = Vector2Subtract(this->player.getPosition(), CameraSingleton::getInstance()->getCamera().target);
     float length  = Vector2Length(diff);
 
@@ -49,11 +50,7 @@ void Game::updateCamera() {
 
 void Game::update() {
     this->updateCamera();
-
-    if(this->player.isAlive()){
-        this->player.update();
-    }
-
+    this->player.update();
 }
 
 void Game::render() {
@@ -67,18 +64,17 @@ void Game::render() {
 
 void Game::draw() {
     BeginMode2D(CameraSingleton::getInstance()->getCamera());
+        
         Map::getInstance()->draw();
+        
+        if(this->player.isAlive()) {
+            this->player.draw();
+        }
 
-    if(this->player.isAlive()){
-        this->player.draw();
-    }
     EndMode2D();
 }
 
 void Game::loadTextures() {
     Map::getInstance()->loadTextures();
-    
-    if(this->player.isAlive()){
-        this->player.loadTextures();    
-    }
+    this->player.loadTextures();
 }
