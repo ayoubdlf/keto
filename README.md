@@ -8,7 +8,7 @@ Keto is a 2d platformer made with [Raylib](https://github.com/raysan5/raylib).
 Raylib needs these tools and libraries to work
 
 ```bash
-sudo build-essential git libasound2-dev libx11-dev libxrandr-dev libxi-dev libgl1-mesa-dev libglu1-mesa-dev libxcursor-dev libxinerama-dev
+sudo apt install  build-essential git libasound2-dev libx11-dev libxrandr-dev libxi-dev libgl1-mesa-dev libglu1-mesa-dev libxcursor-dev libxinerama-dev
 ```
 
 ## 👷🏼 Building Keto
