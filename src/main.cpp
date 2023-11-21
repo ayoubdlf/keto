@@ -1,17 +1,14 @@
-#include <raylib.h>
 #include "../include/game.hpp"
 
 int main() {
 
-    Game game = Game(WIDTH, HEIGHT);
-
-    game.loadTextures();
+    Game::getInstance()->init();
     
     while (!WindowShouldClose()) {
 
-        game.input();
-        game.update();
-        game.render();
+        Game::getInstance()->input();
+        Game::getInstance()->update();
+        Game::getInstance()->render();
 
     }
     

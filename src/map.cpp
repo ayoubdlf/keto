@@ -1,13 +1,4 @@
 #include "../include/map.hpp"
-#include <fstream>
-#include <cassert>
-
-Map* Map::getInstance() {
-    if (instance == 0) { instance = new Map(); }
-    return instance;
-}
-
-Map* Map::instance = 0;
 
 // MAP Methods
 

@@ -1,7 +1,11 @@
-#include <iostream>
-#include <raylib.h>
-#include <raymath.h>
 #include "../include/game.hpp"
+
+Game* Game::instance = 0;
+
+Game* Game::getInstance() {
+    if (instance == 0) { instance = new Game(WIDTH, HEIGHT); }
+    return instance;
+}
 
 Game::Game(int width, int height) {
 
@@ -13,19 +17,37 @@ Game::Game(int width, int height) {
     InitWindow(width, height, "Keto");
     SetTargetFPS(60);
 
-    // Init player
-    this->player.setPlayer();
-
     // Init map
-    Map::getInstance()->load("assets/map/map.txt");
-
+    this->map.load("assets/map/map.txt");
+    
     // Init camera
-    CameraSingleton::getInstance()->getCamera().offset   = { width/2.0f, height/2.0f };
-    CameraSingleton::getInstance()->getCamera().zoom     = ZOOM;
-    CameraSingleton::getInstance()->getCamera().rotation = 0.0f;
+    this->camera.offset   = { width/2.0f, height/2.0f };
+    this->camera.zoom     = ZOOM;
+    this->camera.rotation = 0.0f;
+
+    // Init player
+    this->player.setName();
+
+    // Init enemies
+    for (int i = 0; i < NB_ENEMIES; i++) {
+        this->enemies.emplace_back();
+        this->enemies[i].setName("keti");
+        this->enemies[i].setPosition({ 132.0f, 10.0f });
+    }
+
+    // Load textures
+    this->loadTextures();
+
 }
 
 Game::~Game() {}
+
+void Game::init() {
+    /*  This method does nothing. But it's helpful in the main.cpp
+        Calling this function before the game loop,
+        will allow us to initialize out instance of the game singleton.
+    */
+}
 
 void Game::input() {
     if(this->player.isAlive()) {
@@ -38,19 +60,42 @@ void Game::updateCamera() {
     float minEffectLength = 20;
     float fractionSpeed   = Y_VELOCITY;
 
-    CameraSingleton::getInstance()->getCamera().offset = { GetScreenWidth()/2.0f, GetScreenHeight()/2.0f };
-    Vector2 diff  = Vector2Subtract(this->player.getPosition(), CameraSingleton::getInstance()->getCamera().target);
+    this->camera.offset = { GetScreenWidth()/2.0f, GetScreenHeight()/2.0f };
+    Vector2 diff  = Vector2Subtract(this->player.getPosition(), this->camera.target);
     float length  = Vector2Length(diff);
 
     if (length > minEffectLength) {
         float speed = fmaxf(fractionSpeed * length, minSpeed);
-        CameraSingleton::getInstance()->getCamera().target = Vector2Add(CameraSingleton::getInstance()->getCamera().target, Vector2Scale(diff, speed*DELTA/length));
+        this->camera.target = Vector2Add(this->camera.target, Vector2Scale(diff, speed*DELTA/length));
     }
+}
+
+Camera2D& Game::getCamera() {
+    return this->camera;
+}
+
+std::vector<Tile>& Game::getObstacles() {
+    return this->map.getObstacles();
+}
+
+Player& Game::getPlayer() {
+    return this->player;
+}
+
+std::vector<Enemy>& Game::getEnemies() {
+    return this->enemies;
 }
 
 void Game::update() {
     this->updateCamera();
     this->player.update();
+
+    for (int i = 0; i < (int)this->enemies.size(); i++) {
+        if(this->enemies[i].isAlive()) {
+            this->enemies[i].update();
+        }
+    }
+    
 }
 
 void Game::render() {
@@ -63,18 +108,30 @@ void Game::render() {
 }
 
 void Game::draw() {
-    BeginMode2D(CameraSingleton::getInstance()->getCamera());
+    BeginMode2D(this->camera);
         
-        Map::getInstance()->draw();
+        this->map.draw();
         
         if(this->player.isAlive()) {
             this->player.draw();
+        }
+
+        for (int i = 0; i < (int)this->enemies.size(); i++) {
+            if(this->enemies[i].isAlive()) {
+                this->enemies[i].draw();
+            }
         }
 
     EndMode2D();
 }
 
 void Game::loadTextures() {
-    Map::getInstance()->loadTextures();
+    this->map.loadTextures();
     this->player.loadTextures();
+
+    for (int i = 0; i < (int)this->enemies.size(); i++) {
+        if(this->enemies[i].isAlive()) {
+            this->enemies[i].loadTextures();
+        }
+    } 
 }

@@ -1,7 +1,6 @@
-#include <iostream>
-#include <raylib.h>
 #include "../include/bullet.hpp"
 #include "../include/map.hpp"
+#include "../include/game.hpp"
 
 Bullet::Bullet() {
     this->scale = 0.4f;
@@ -29,16 +28,36 @@ void Bullet::fire(Vector2 position, float angle) {
 }
 
 void Bullet::handleCollision() {
-    for(Tile obstacle : Map::getInstance()->getObstacles()) {
+    Rectangle bullet = {this->position.x, this->position.y, (float)this->texture.width * this->scale, (float)this->texture.height * this->scale};
+    
+    for(Tile obstacle : Game::getInstance()->getObstacles()) {
         Rectangle tile   = {obstacle.pos.x, obstacle.pos.y, (float)obstacle.texture.width, (float)obstacle.texture.height};
-        Rectangle bullet = {this->position.x, this->position.y, (float)this->texture.width * this->scale, (float)this->texture.height * this->scale};
-        
+
         if (CheckCollisionRecs(bullet, tile)) {
             this->active = false;
             break;
         }
         
     }
+
+    // Check if the bullet hit the player or one of the enemies
+    Rectangle player            = Game::getInstance()->getPlayer().getRect();
+    std::vector<Enemy>& enemies = Game::getInstance()->getEnemies();
+    
+    if (CheckCollisionRecs(bullet, player)) {
+        this->active = false;
+        Game::getInstance()->getPlayer().damage(1);
+        return;
+    }
+
+    for (int i = 0; i < enemies.size(); i++) {
+        if (CheckCollisionRecs(bullet, enemies[i].getRect())) {
+            this->active = false;
+            enemies[i].damage(1);
+            return;
+        }
+    }
+
 }
 
 bool Bullet::isActive() {

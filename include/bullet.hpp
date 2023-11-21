@@ -5,7 +5,6 @@
 #include <raylib.h>
 #include <raymath.h>
 #include "utils.hpp"
-#include "camera.hpp"
 
 using namespace utils;
 

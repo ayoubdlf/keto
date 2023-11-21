@@ -1,31 +1,29 @@
-#include "../include/player.hpp"
+#include "../include/enemy.hpp"
 #include "../include/game.hpp"
 
-Player::Player() {
-    this->position      = {100.0f, 10.0f};
-    this->isJumping     = false;
+Enemy::Enemy() {
     this->action        = Nothing;
     this->currentFrame  = 0;
     this->framesCounter = 0;
     this->framesSpeed   = X_FRAME_SPEED; 
-    this->direction     = Right;
+    this->direction     = Left;
 }
 
-void Player::draw() {
+void Enemy::draw() {
 
-    /* Player */
+    /* Enemy */
     Rectangle source = this->textures[this->action].frames;
     if(this->direction == Left) { source.width = -source.width; }
 
     DrawTextureRec(this->textures[this->action].texture, source, this->position, RAYWHITE);
 
     this->drawHealthBar();
-    
+
     /* Gun */
     this->gun.draw();
 }
 
-void Player::updateFrames() {
+void Enemy::updateFrames() {
     this->framesCounter += 1;
 
     if (this->framesCounter >= (60 / this->framesSpeed)) {
@@ -37,46 +35,38 @@ void Player::updateFrames() {
     this->textures[this->action].frames.x = this->currentFrame * this->width;
 }
 
-void Player::update() {
+void Enemy::updateBrain() {
+    this->velocity    = {0.0f, this->velocity.y};
+    this->action      = Idle;
+    this->framesSpeed = X_FRAME_SPEED;
+}
+
+void Enemy::update() {
+    this->updateBrain();
     this->updatePosition();
     this->updateFrames();
-
-    /* Gun */
-    this->gun.update(this->position);
 
     /* Collisions */
     this->handleCollisions();
 
 }
 
-void Player::handleInputs() {
-    this->velocity    = { 0.0f, this->velocity.y };
-    this->action      = Idle;
-    this->framesSpeed = X_FRAME_SPEED;
-    Vector2 mouse     = GetScreenToWorld2D(GetMousePosition(), Game::getInstance()->getCamera());
-    this->direction   = (mouse.x >= this->position.x) ? Right : Left;
-
-    if(IsKeyDown(KEY_RIGHT))                  { this->velocity.x =  X_VELOCITY * DELTA * SCALE; this->action = Run;  this->direction = Right; }
-    if(IsKeyDown(KEY_LEFT))                   { this->velocity.x = -X_VELOCITY * DELTA * SCALE; this->action = Run;  this->direction = Left;  }
-    if(IsKeyDown(KEY_UP) && !this->isJumping) { this->velocity.y = -Y_VELOCITY * DELTA * SCALE; this->action = Jump; this->isJumping = true; this->framesSpeed = Y_FRAME_SPEED; }
-
-    if(IsKeyDown(KEY_N))    { this->gun.throwGun(); }
-    if(IsKeyDown(KEY_G))    { this->gun.useGun(); }
-    if(IsKeyPressed(KEY_F)) { this->gun.fire(); }
+void Enemy::setPosition(Vector2 position) {
+    this->position = position;
 }
 
-Vector2 Player::getPosition() {
+Vector2 Enemy::getPosition() {
     return this->position;
 }
 
-void Player::handleCollisions() {
+void Enemy::handleCollisions() {
     
     // X AXIS COLLISIONS
     for(Tile obstacle : Game::getInstance()->getObstacles()) {
-        Rectangle tile   = {obstacle.pos.x, obstacle.pos.y, (float)obstacle.texture.width, (float)obstacle.texture.height};
-        Rectangle player = {this->position.x, this->position.y - this->velocity.y, this->width, this->height};
+        Rectangle tile  = {obstacle.pos.x, obstacle.pos.y, (float)obstacle.texture.width, (float)obstacle.texture.height};
+        Rectangle enemy = {this->position.x, this->position.y - this->velocity.y, this->width, this->height};
         
-        if (CheckCollisionRecs(player, tile)) {
+        if (CheckCollisionRecs(enemy, tile)) {
             this->velocity.x = 0;
             this->position.x = (this->position.x > tile.x) ? tile.x + this->width : tile.x - this->width;
             break;
@@ -87,20 +77,20 @@ void Player::handleCollisions() {
     // Y AXIS COLLISIONS
     for(Tile obstacle : Game::getInstance()->getObstacles()) {
         Rectangle tile   = {obstacle.pos.x, obstacle.pos.y, (float)obstacle.texture.width, (float)obstacle.texture.height};
-        Rectangle player = {this->position.x, this->position.y, this->width, this->height};
+        Rectangle enemy = {this->position.x, this->position.y, this->width, this->height};
         
-        if (CheckCollisionRecs(player, tile)) {
-            // Head (collisions with the player head)
+        if (CheckCollisionRecs(enemy, tile)) {
+            // Head (collisions with the enemy head)
             if (this->velocity.y < 0) {
                 this->velocity.y = 0;
                 this->position.y = tile.y + this->height;
             }
 
-            // Feet (collisions with the player feets)
+            // Feet (collisions with the enemy feets)
             if (this->velocity.y > 0) {
                 this->velocity.y = 0;
                 this->position.y = tile.y - this->height;
-                this->isJumping = false;
+
             }
             break;
         }
@@ -109,7 +99,7 @@ void Player::handleCollisions() {
 
 }
 
-ActionTexture Player::loadActionTexture(std::string path) {
+ActionTexture Enemy::loadActionTexture(std::string path) {
     Texture2D texture = LoadTexture(path.c_str());
 
     if(strstr(path.c_str(), this->name.c_str())) {
@@ -129,14 +119,12 @@ ActionTexture Player::loadActionTexture(std::string path) {
 
 }
 
-void Player::loadTextures() {
+void Enemy::loadTextures() {
     std::string nothing = "assets/players/" + this->name + "/" + this->name + ".png";
     std::string idle    = "assets/players/" + this->name + "/idle.png";
     std::string run     = "assets/players/" + this->name + "/run.png";
-    std::string jump    = "assets/players/" + this->name + "/jump.png";
 
     this->textures[Nothing] = loadActionTexture(nothing);
     this->textures[Idle]    = loadActionTexture(idle);
     this->textures[Run]     = loadActionTexture(run);
-    this->textures[Jump]    = loadActionTexture(jump);
 }

@@ -4,9 +4,7 @@
 #include <iostream>
 #include <raylib.h>
 #include "utils.hpp"
-#include "camera.hpp"
 #include "bullet.hpp"
-#include <stack>
 
 using namespace utils;
 
@@ -25,6 +23,8 @@ class Gun {
         /* Bullets */
         int nbBullets;
         std::vector<Bullet> bullets;
+
+        void updateBullets();
     public:
         Gun();
         ~Gun();
@@ -34,7 +34,6 @@ class Gun {
         void draw();
         void fire();
         void load(int nbBullets);
-        bool isAvailable();
         void loadTexture();
 };
 

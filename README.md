@@ -48,11 +48,3 @@ Run it and have fun! 👾
 
 - [Ayoub](https://github.com/ayoub-org)
 - Safir
-
-
-
-## TODO
-
-- [ ] Comment 😪
-- [ ] Make sure we unloaded and cleaned everything
-- [ ] Assert

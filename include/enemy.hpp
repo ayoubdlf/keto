@@ -1,5 +1,5 @@
-#ifndef PLAYER_HPP
-#define PLAYER_HPP
+#ifndef ENEMY_HPP
+#define ENEMY_HPP
 
 #include <iostream>
 #include <raylib.h>
@@ -7,11 +7,9 @@
 
 using namespace utils;
 
-class Player : public Sprite {
+class Enemy : public Sprite {
     private:
-        bool isJumping;
-        
-        Direction direction; // Player direction: left or right
+        Direction direction; // Enemy direction: left or right
         int currentFrame;
         int framesCounter;
         int framesSpeed;
@@ -20,14 +18,14 @@ class Player : public Sprite {
         ActionTexture loadActionTexture(std::string path);
         void handleCollisions();
     public:
-        Player();
-        void handleInputs();
+        Enemy();
         void draw();
         void update();
         void updateFrames();
-        Vector2 getPosition();
+        void updateBrain();
+        void setPosition(Vector2 position);
         void loadTextures();
+        Vector2 getPosition();
 };
 
-
-#endif // PLAYER_HPP
+#endif // ENEMY_HPP

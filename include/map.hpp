@@ -2,15 +2,15 @@
 #define MAP_HPP
 
 #include <iostream>
+#include <fstream>
+#include <cassert>
 #include <raylib.h>
 #include "utils.hpp"
 
 using namespace utils;
 
 class Map {
-    private:
-        static Map* instance;
-        
+    private:        
         std::vector<std::vector<int>> map;
         std::vector<std::vector<Tile>> tilesMap;
         std::vector<Tile> obstacles;
@@ -19,10 +19,7 @@ class Map {
         void loadTiles();
     public:
         ~Map();
-
-        static Map* getInstance();
         std::vector<Tile>& getObstacles();
-        
         void load(std::string filepath);
         void loadTextures();
         void draw();

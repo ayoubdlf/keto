@@ -21,7 +21,9 @@ constexpr float ZOOM             =   1.2f;
 constexpr int   X_FRAME_SPEED    =   12;
 constexpr int   Y_FRAME_SPEED    =   X_FRAME_SPEED * 2;
 constexpr int   MAX_BULLETS      =   20000;
-constexpr float BULLET_VELOCITY  =   8.0f;
+constexpr float BULLET_VELOCITY  =   6.5f;
+constexpr int   NB_ENEMIES       =   1;
+constexpr int   MAX_HEALTH       =   10;
 //  END DEFINES
 
 
@@ -78,7 +80,7 @@ namespace utils {
     int findIndexById(int id, std::vector<utils::Texture> textureVect);
 
     /*
-    *   Get value in map // TODO: comment in a clear way
+    *   Get value in map
     */
     utils::TileType getTileTypeByCode(int code);
 }
