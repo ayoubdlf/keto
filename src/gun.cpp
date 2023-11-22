@@ -144,10 +144,6 @@ void Gun::fire() {
             .y = this->position.y + (std::abs(this->source.width) * this->scale * 1.5f) * sin(angle)
         };
 
-        if(this->shooter == shooter::Player) {
-            Vector2 playerPos = Game::getInstance()->getPlayer().getPosition();
-        }
-
         this->bullets.emplace_back();
         this->bullets.back().fire(bulletPos, angle); // Firing the bullet
 
