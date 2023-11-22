@@ -70,7 +70,8 @@ void Player::handleInputs() {
 
     if(IsKeyDown(KEY_N))    { this->gun.throwGun(); }
     if(IsKeyDown(KEY_G))    { this->gun.useGun(shooter::type::Player); }
-    if(IsKeyPressed(KEY_F)) { this->gun.fire(); }
+    if(IsMouseButtonPressed(MOUSE_BUTTON_LEFT)) { this->gun.fire(); }
+    
 }
 
 Vector2 Player::getPosition() {

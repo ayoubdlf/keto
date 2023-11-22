@@ -30,7 +30,7 @@ class Game {
         void render();
         void updateCamera();
 
-        Camera2D& getCamera();
+        Camera2D getCamera();
         std::vector<Tile>& getObstacles();
         Player& getPlayer();
         std::vector<Enemy>& getEnemies();

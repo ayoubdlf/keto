@@ -7,6 +7,8 @@ Enemy::Enemy() {
     this->framesCounter = 0;
     this->framesSpeed   = X_FRAME_SPEED; 
     this->direction     = Left;
+    this->brainCounter  = 0;
+
     this->gun.useGun(shooter::type::Enemy);
 }
 

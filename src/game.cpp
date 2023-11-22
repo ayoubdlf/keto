@@ -22,6 +22,7 @@ Game::Game(int width, int height) {
     this->map.load("assets/map/map.txt");
     
     // Init camera
+    this->camera.target   = { GetScreenWidth()/2.0f, GetScreenHeight()/2.0f };
     this->camera.offset   = { width/2.0f, height/2.0f };
     this->camera.zoom     = ZOOM;
     this->camera.rotation = 0.0f;
@@ -71,7 +72,7 @@ void Game::updateCamera() {
     }
 }
 
-Camera2D& Game::getCamera() {
+Camera2D Game::getCamera() {
     return this->camera;
 }
 
