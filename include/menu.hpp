@@ -15,10 +15,21 @@ namespace menuState {
     };
 };
 
+namespace menuTextures {
+    enum state {
+        Welcome        = 0,
+        LevelSelection = 1,
+        GameOver       = 2
+    };
+};
+
 
 class Menu {
     private:
-        std::vector<Texture2D> textures;
+        std::vector<Texture2D> texturesWelcome;
+        std::vector<Texture2D> texturesLevelSelection;
+        std::vector<Texture2D> texturesGameOver;
+
         menuState::state state;
 
     public:
@@ -31,6 +42,10 @@ class Menu {
         void draw();
 
         void update();
+        void updateWelcome();
+        void updateLevels();
+        void updateGameOver();
+
         void loadTexture();
 };
 
