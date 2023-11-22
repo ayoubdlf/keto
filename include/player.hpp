@@ -16,6 +16,7 @@ class Player : public Sprite {
         int framesCounter;
         int framesSpeed;
         std::array<ActionTexture, 4> textures;
+        Texture2D tag;
 
         ActionTexture loadActionTexture(std::string path);
         void handleCollisions();
@@ -27,6 +28,7 @@ class Player : public Sprite {
         void updateFrames();
         Vector2 getPosition();
         void loadTextures();
+        void drawTag();
 };
 
 

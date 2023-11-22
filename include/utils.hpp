@@ -17,18 +17,18 @@ constexpr float DELTA            =   0.01f;
 constexpr float GRAVITY          =   80.0f * DELTA;
 constexpr float X_VELOCITY       =   5.0f;
 constexpr float Y_VELOCITY       =   X_VELOCITY * 2.8;
-constexpr float ZOOM             =   1.2f;
+constexpr float ZOOM             =   1.5f;
 constexpr int   X_FRAME_SPEED    =   12;
 constexpr int   Y_FRAME_SPEED    =   X_FRAME_SPEED * 2;
-constexpr int   MAX_BULLETS      =   20000;
-constexpr float BULLET_VELOCITY  =   6.5f;
+constexpr int   MAX_BULLETS      =   10000;
+constexpr float BULLET_VELOCITY  =   8.0f;
 constexpr int   NB_ENEMIES       =   1;
 constexpr int   MAX_HEALTH       =   10;
 //  END DEFINES
 
 
 namespace utils {
-
+    
     enum Direction {
         Left  = 0,
         Right = 1

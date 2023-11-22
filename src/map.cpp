@@ -7,7 +7,7 @@ Map::~Map() {}
 void Map::draw() {
     for(int i = 0; i < (int)this->tilesMap.size(); i++) {
         for(int j = 0; j < (int)this->tilesMap[i].size(); j++) {
-            DrawTexture(this->tilesMap[i][j].texture, this->tilesMap[i][j].pos.x, this->tilesMap[i][j].pos.y, RAYWHITE);
+            DrawTexture(this->tilesMap[i][j].texture, this->tilesMap[i][j].pos.x, this->tilesMap[i][j].pos.y, WHITE);
         }
     }
 }

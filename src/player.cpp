@@ -11,15 +11,23 @@ Player::Player() {
     this->direction     = Right;
 }
 
+void Player::drawTag() {
+    int posx = this->position.x + (this->width/2) - (this->tag.width/2);
+    int posy = this->position.y - 5;
+    DrawTexture(this->tag, posx, posy, WHITE);
+}
+
 void Player::draw() {
 
     /* Player */
     Rectangle source = this->textures[this->action].frames;
     if(this->direction == Left) { source.width = -source.width; }
 
-    DrawTextureRec(this->textures[this->action].texture, source, this->position, RAYWHITE);
+    DrawTextureRec(this->textures[this->action].texture, source, this->position, WHITE);
+    DrawRectangleLines(this->position.x, this->position.y, this->width, this->height, BLACK);
 
     this->drawHealthBar();
+    this->drawTag();
     
     /* Gun */
     this->gun.draw();
@@ -61,7 +69,7 @@ void Player::handleInputs() {
     if(IsKeyDown(KEY_UP) && !this->isJumping) { this->velocity.y = -Y_VELOCITY * DELTA * SCALE; this->action = Jump; this->isJumping = true; this->framesSpeed = Y_FRAME_SPEED; }
 
     if(IsKeyDown(KEY_N))    { this->gun.throwGun(); }
-    if(IsKeyDown(KEY_G))    { this->gun.useGun(); }
+    if(IsKeyDown(KEY_G))    { this->gun.useGun(shooter::type::Player); }
     if(IsKeyPressed(KEY_F)) { this->gun.fire(); }
 }
 
@@ -134,9 +142,12 @@ void Player::loadTextures() {
     std::string idle    = "assets/players/" + this->name + "/idle.png";
     std::string run     = "assets/players/" + this->name + "/run.png";
     std::string jump    = "assets/players/" + this->name + "/jump.png";
+    std::string tag     = "assets/items/tag.png";
 
     this->textures[Nothing] = loadActionTexture(nothing);
     this->textures[Idle]    = loadActionTexture(idle);
     this->textures[Run]     = loadActionTexture(run);
     this->textures[Jump]    = loadActionTexture(jump);
+    this->textures[Jump]    = loadActionTexture(jump);
+    this->tag               = LoadTexture(tag.c_str());
 }

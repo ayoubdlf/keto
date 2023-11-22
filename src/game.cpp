@@ -7,13 +7,14 @@ Game* Game::getInstance() {
     return instance;
 }
 
+
 Game::Game(int width, int height) {
 
     // Init window
     SetTraceLogLevel(LOG_WARNING);         // remove annoying logging
     SetConfigFlags(FLAG_WINDOW_HIGHDPI);   // DPI
     SetConfigFlags(FLAG_WINDOW_RESIZABLE); // Make resizing window possible
-    
+
     InitWindow(width, height, "Keto");
     SetTargetFPS(60);
 
@@ -32,7 +33,7 @@ Game::Game(int width, int height) {
     for (int i = 0; i < NB_ENEMIES; i++) {
         this->enemies.emplace_back();
         this->enemies[i].setName("keti");
-        this->enemies[i].setPosition({ 132.0f, 10.0f });
+        this->enemies[i].setPosition({ 256.0f, 10.0f });
     }
 
     // Load textures
@@ -101,7 +102,7 @@ void Game::update() {
 void Game::render() {
     BeginDrawing();
 
-        ClearBackground(RAYWHITE);
+        ClearBackground(WHITE);
         this->draw();
     
     EndDrawing();

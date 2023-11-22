@@ -7,6 +7,7 @@ Enemy::Enemy() {
     this->framesCounter = 0;
     this->framesSpeed   = X_FRAME_SPEED; 
     this->direction     = Left;
+    this->gun.useGun(shooter::type::Enemy);
 }
 
 void Enemy::draw() {
@@ -15,7 +16,7 @@ void Enemy::draw() {
     Rectangle source = this->textures[this->action].frames;
     if(this->direction == Left) { source.width = -source.width; }
 
-    DrawTextureRec(this->textures[this->action].texture, source, this->position, RAYWHITE);
+    DrawTextureRec(this->textures[this->action].texture, source, this->position, WHITE);
 
     this->drawHealthBar();
 
@@ -36,15 +37,58 @@ void Enemy::updateFrames() {
 }
 
 void Enemy::updateBrain() {
-    this->velocity    = {0.0f, this->velocity.y};
-    this->action      = Idle;
-    this->framesSpeed = X_FRAME_SPEED;
+    this->velocity      = {0.0f, this->velocity.y};
+    this->action        = Idle;
+    this->framesSpeed   = X_FRAME_SPEED;
+    this->brainCounter += 1;
+
+    Vector2 playerPos = Game::getInstance()->getPlayer().getPosition();
+
+    int distanceToPlater = Vector2Distance(this->position, playerPos);
+    if(distanceToPlater > Game::getInstance()->getPlayer().getRect().width * 10) { return; }
+
+    // Now the distance between the enemy and the player is good
+    // Now we're going to implemen the `enemy's brain`
+
+    // 60 are FPS
+    if (this->brainCounter >= 60 * 1) {
+        this->brainCounter = 0;
+        this->gun.fire();
+    }
+
+    // Move the enemy closer to the player
+    // Leaving player.width * 2 as offset
+    if(distanceToPlater <= Game::getInstance()->getPlayer().getRect().width * 2) { return; };
+    if((int)this->position.y != (int)playerPos.y) { return; };
+
+    float angleX   = playerPos.x - this->position.x;
+    float angleY   = playerPos.y - this->position.y;
+    float rotation = (atan2(angleY, angleX));
+
+    this->action    = Run;
+    this->direction = Right;
+
+    this->velocity.x = (X_VELOCITY * 0.2f) * DELTA * SCALE;
+
+    if(std::abs(rotation) * RAD2DEG > 90.0f) {
+        this->velocity.x = -this->velocity.x;
+        this->direction  = Left;
+    }
+
+    if((int)playerPos.x == (int)this->position.x && (int)playerPos.y == (int)this->position.y) {
+        this->velocity.x = 0;
+        this->action     = Idle;
+    }
+
 }
 
 void Enemy::update() {
     this->updateBrain();
     this->updatePosition();
     this->updateFrames();
+
+    /* Gun */
+    this->gun.update(this->position);
 
     /* Collisions */
     this->handleCollisions();

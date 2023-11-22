@@ -3,21 +3,24 @@
 
 Gun::Gun() {
     this->available = false;
+    this->canShoot  = false;
 }
 
 Gun::~Gun() {}
 
-void Gun::useGun() {
+void Gun::useGun(shooter::type shooter) {
     this->throwGun();
     this->loadTexture();
     this->available = true;
+    this->shooter   = shooter;
 
     this->source = { 0.0f, 0.0f, (float)this->texture.width, (float)this->texture.height };
     this->scale  = 0.5f;
-    
+
     /* Bullets */
-    this->nbBullets = 0;
-    this->load(MAX_BULLETS);
+    this->bulletsLeft = 0;
+    if(this->shooter == shooter::Player) { this->load(MAX_BULLETS); }
+    if(this->shooter == shooter::Enemy)  { this->load(MAX_BULLETS * 4); }
 
 }
 
@@ -27,7 +30,7 @@ void Gun::throwGun() {
 
 void Gun::draw() {
     if(this->available) {
-        DrawTexturePro(this->texture, this->source, this->dest, this->origin, this->rotation, RAYWHITE);
+        DrawTexturePro(this->texture, this->source, this->dest, this->origin, this->rotation, WHITE);
 
         /* Bullets */
         for (Bullet bullet : this->bullets) {
@@ -48,43 +51,90 @@ void Gun::updateBullets() {
     }
 }
 
+void Gun::updatePlayerBehaviour(Vector2 position) {
+    // Making sure the gun is positioned well, near the player hands
+    this->position.x    = position.x + 16.0f;
+    this->position.y    = position.y + 22.0f;
+
+    this->source.height = std::abs(this->source.height);
+    this->dest   = {
+        .x      = this->position.x,
+        .y      = this->position.y,
+        .width  = (this->source.width * this->scale),
+        .height = (this->source.height * this->scale)
+    };
+    this->origin = {
+        .x = (this->source.width  * this->scale) * (0.0f / this->source.width),
+        .y = (this->source.height * this->scale) * (4.0f / this->source.height)
+    };
+
+    Vector2 mouse  =  GetScreenToWorld2D(GetMousePosition(), Game::getInstance()->getCamera());
+    float angleX   = mouse.x - this->position.x;
+    float angleY   = mouse.y - this->position.y;
+    this->rotation = (atan2(angleY, angleX)) * RAD2DEG;
+
+
+    // If the gun is pointed to the left, flip the source
+    // So that when drawing, the gun will be flipped horizontally
+    if(std::abs(this->rotation) > 90.0f) {
+        this->origin.y = (this->source.height * this->scale) * (1-4.0f / this->source.height);
+        this->source.height = -this->source.height;
+    }
+
+    // Setting a minimal distance for the shooting
+    // Without this the shooter can hit himself
+    this->canShoot = (Vector2Distance(this->position, mouse) > this->texture.width) ? true : false;
+
+    this->updateBullets();
+}
+
+void Gun::updateEnemyBehaviour(Vector2 position) {
+    // Making sure the gun is positioned well, near the enemy's hands
+    this->position.x    = position.x + 16.0f;
+    this->position.y    = position.y + 22.0f;
+
+    this->source.height = std::abs(this->source.height);
+    this->dest   = {
+        .x      = this->position.x,
+        .y      = this->position.y,
+        .width  = (this->source.width * this->scale),
+        .height = (this->source.height * this->scale)
+    };
+    this->origin = {
+        .x = (this->source.width  * this->scale) * (0.0f / this->source.width),
+        .y = (this->source.height * this->scale) * (4.0f / this->source.height)
+    };
+
+    // Here the target is the player position.
+    // The enemy will always have the gun pointed towards the player
+    Vector2 target = Game::getInstance()->getPlayer().getPosition();
+    target.x += Game::getInstance()->getPlayer().getRect().width/2;
+    target.y += Game::getInstance()->getPlayer().getRect().height/2;
+
+    float angleX   = target.x - this->position.x;
+    float angleY   = target.y - this->position.y;
+    this->rotation = (atan2(angleY, angleX)) * RAD2DEG;
+
+    // If the gun is pointed to the left, flip the source
+    // So that when drawing, the gun will be flipped horizontally
+    if(std::abs(this->rotation) > 90.0f) {
+        this->origin.y = (this->source.height * this->scale) * (1-4.0f / this->source.height);
+        this->source.height = -this->source.height;
+    }
+
+    this->updateBullets();
+}
+
 void Gun::update(Vector2 position) {
-    if(this->available) {
-    
-        // Making sure the gun is positioned well, near the player hands
-        this->position.x    = position.x + 16.0f;
-        this->position.y    = position.y + 22.0f;
-
-        this->source.height = std::abs(this->source.height);
-        this->dest   = {
-            .x      = this->position.x,
-            .y      = this->position.y,
-            .width  = (this->source.width * this->scale),
-            .height = (this->source.height * this->scale)
-        };
-        this->origin = {
-            .x = (this->source.width  * this->scale) * (0.0f / this->source.width),
-            .y = (this->source.height * this->scale) * (4.0f / this->source.height)
-        };
-
-        Vector2 mouse  =  GetScreenToWorld2D(GetMousePosition(), Game::getInstance()->getCamera());
-        float angleX   = mouse.x - this->position.x;
-        float angleY   = mouse.y - this->position.y;
-        this->rotation = (atan2(angleY, angleX)) * RAD2DEG;
-
-        // If the gun is pointed to the left, flip the source
-        // So that when drawing, the gun will be flipped horizontally
-        if(std::abs(this->rotation) > 90.0f) {
-            this->origin.y = (this->source.height * this->scale) * (1-4.0f / this->source.height);
-            this->source.height = -this->source.height;
-        }
-
-        this->updateBullets();
+    if(this->available) { 
+        if(this->shooter == shooter::Player) { this->updatePlayerBehaviour(position); }
+        if(this->shooter == shooter::Enemy)  { this->updateEnemyBehaviour(position);  }
     }
 }
 
 void Gun::fire() {
-    if(this->nbBullets > 0) {
+    if(this->bulletsLeft > 0) {
+        if(this->shooter == shooter::Player && this->canShoot == false) { return; }
 
         // Setting up bullet initial position and its projection
         float angle = this->rotation * DEG2RAD;
@@ -94,19 +144,27 @@ void Gun::fire() {
             .y = this->position.y + (std::abs(this->source.width) * this->scale) * sin(angle)
         };
 
+        if(this->shooter == shooter::Player) {
+            Vector2 playerPos = Game::getInstance()->getPlayer().getPosition();
+            std::cout << "PLAYER: (" << playerPos.x << ", " << playerPos.y << ")" << std::endl;
+            std::cout << "BULLET: (" << bulletPos.x << ", " << bulletPos.y << ")" << std::endl;
+        }
+
+
         this->bullets.emplace_back();
         this->bullets.back().fire(bulletPos, angle); // Firing the bullet
 
-        this->nbBullets -= 1;
+        this->bulletsLeft -= 1;
+
     }
 }
 
 void Gun::load(int bullets) {
     if(this->available) {
-        this->nbBullets += bullets;
+        this->bulletsLeft += bullets;
 
-        if(this->nbBullets > MAX_BULLETS) {
-            this->nbBullets = MAX_BULLETS;
+        if(this->shooter == shooter::Player && this->bulletsLeft > MAX_BULLETS) {
+            this->bulletsLeft = MAX_BULLETS;
         }
     }
 }
@@ -115,4 +173,8 @@ void Gun::loadTexture() {
     // std::string path = "assets/items/gun.png";
     std::string path = "assets/items/pistol.png";
     this->texture = LoadTexture(path.c_str()); 
+}
+
+int Gun::getBulletsLeft() {
+    return this->bulletsLeft;
 }

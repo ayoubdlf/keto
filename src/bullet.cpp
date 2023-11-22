@@ -9,7 +9,7 @@ Bullet::Bullet() {
 Bullet::~Bullet() {}
 
 void Bullet::draw() {
-    DrawTextureEx(this->texture, this->position, this->rotation, this->scale, RAYWHITE);
+    DrawTextureEx(this->texture, this->position, this->rotation, this->scale, WHITE);
 }
 
 void Bullet::update() {
@@ -50,7 +50,7 @@ void Bullet::handleCollision() {
         return;
     }
 
-    for (int i = 0; i < enemies.size(); i++) {
+    for (int i = 0; i < (int)enemies.size(); i++) {
         if (CheckCollisionRecs(bullet, enemies[i].getRect())) {
             this->active = false;
             enemies[i].damage(1);

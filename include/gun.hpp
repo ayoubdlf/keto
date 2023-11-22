@@ -8,11 +8,20 @@
 
 using namespace utils;
 
+namespace shooter {
+    enum type {
+        Player = 0,
+        Enemy  = 1,
+    };
+};
+
 class Gun {
     private:
-        Texture2D texture;
-        Vector2   position;
-        bool      available;
+        Texture2D     texture;
+        Vector2       position;
+        bool          available;
+        bool          canShoot; // To avoid the shooter shooting himself
+        shooter::type shooter;
 
         Rectangle source;
         Rectangle dest;
@@ -21,20 +30,23 @@ class Gun {
         float     scale;
 
         /* Bullets */
-        int nbBullets;
+        int bulletsLeft;
         std::vector<Bullet> bullets;
 
         void updateBullets();
     public:
         Gun();
         ~Gun();
-        void useGun();
+        void useGun(shooter::type shooter);
         void throwGun();
         void update(Vector2 position);
         void draw();
         void fire();
         void load(int nbBullets);
         void loadTexture();
+        int  getBulletsLeft();
+        void updatePlayerBehaviour(Vector2 position);
+        void updateEnemyBehaviour(Vector2 position);
 };
 
 
