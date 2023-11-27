@@ -3,6 +3,7 @@
 
 Player::Player() {
     this->position      = {100.0f, 10.0f};
+    this->kills         = 0;
     this->isJumping     = false;
     this->action        = Nothing;
     this->currentFrame  = 0;
@@ -12,9 +13,60 @@ Player::Player() {
 }
 
 void Player::drawTag() {
-    int posx = this->position.x + (this->width/2) - (this->tag.width/2);
+    int posx = this->position.x + (this->width/2) - (this->tagTexture.width/2);
     int posy = this->position.y - 5;
-    DrawTexture(this->tag, posx, posy, WHITE);
+    DrawTexture(this->tagTexture, posx, posy, WHITE);
+}
+
+void Player::drawHealthBar() {
+    float scale = 1.6f;
+    Vector2 pos = { 5.0f, 8.0f };
+    
+    DrawTextureEx(this->healthBarTexture.left, { pos.x, pos.y }, 0.0f, scale, WHITE);
+    pos.x += this->healthBarTexture.left.width * scale;
+
+    for (int i = 1; i < MAX_HEALTH + 1; i++) {
+        DrawTextureEx((this->health >= i) ? this->healthBarTexture.middle : this->healthBarTexture.middle_empty, { pos.x, pos.y }, 0.0f, scale, WHITE);
+        pos.x += this->healthBarTexture.middle.width * scale;
+    }
+
+    DrawTextureEx(this->healthBarTexture.right, { pos.x, pos.y }, 0.0f, scale, WHITE);
+    DrawTextureEx(this->healthBarTexture.hp_logo, { (this->healthBarTexture.middle.width * scale)*1.5f, 2.0f }, 0.0f, scale, WHITE);
+}
+
+void Player::drawNumbers(Vector2 position, Texture2D texture, int value) {
+    std::string bullets  = std::to_string(value);
+    
+    Vector2 offset = {
+        .x = texture.width  * 0.4f,
+        .y = texture.height * 0.15f
+    };
+
+    for (int i = 0; i < (int)bullets.size(); i++) {
+        int index = bullets[i] - '0';
+        DrawTextureEx(this->numbersTexture[index], { position.x + offset.x, position.y + offset.y }, 0.0f, 1.0f, WHITE);
+        offset.x = offset.x + this->numbersTexture[index].width * 1.1f;
+    }
+}
+
+void Player::drawKills() {
+    Vector2 position = { 5.0f, 30.0f };
+
+    DrawTextureEx(this->killsTexture, position, 0.0f, 1.0f, WHITE);
+    this->drawNumbers(position, this->killsTexture, this->kills);
+}
+
+void Player::drawBullets() {
+    Vector2 position = { 50.0f, 30.0f };
+
+    DrawTextureEx(this->bulletsTexture, position, 0.0f, 1.0f, WHITE);
+    this->drawNumbers(position, this->bulletsTexture, this->gun.getBulletsLeft());
+}
+
+void Player::drawStats() {
+    this->drawHealthBar();
+    this->drawKills();
+    this->drawBullets();
 }
 
 void Player::draw() {
@@ -24,11 +76,8 @@ void Player::draw() {
     if(this->direction == Left) { source.width = -source.width; }
 
     DrawTextureRec(this->textures[this->action].texture, source, this->position, WHITE);
-    DrawRectangleLines(this->position.x, this->position.y, this->width, this->height, BLACK);
-
-    this->drawHealthBar();
     this->drawTag();
-    
+
     /* Gun */
     this->gun.draw();
 }
@@ -138,17 +187,52 @@ ActionTexture Player::loadActionTexture(std::string path) {
 
 }
 
+void Player::kill() {
+    this->kills += 1;
+}
+
 void Player::loadTextures() {
-    std::string nothing = "assets/players/" + this->name + "/" + this->name + ".png";
-    std::string idle    = "assets/players/" + this->name + "/idle.png";
-    std::string run     = "assets/players/" + this->name + "/run.png";
-    std::string jump    = "assets/players/" + this->name + "/jump.png";
-    std::string tag     = "assets/items/tag.png";
+    /* Actions */
+    std::string nothing     = "assets/players/" + this->name + "/" + this->name + ".png";
+    std::string idle        = "assets/players/" + this->name + "/idle.png";
+    std::string run         = "assets/players/" + this->name + "/run.png";
+    std::string jump        = "assets/players/" + this->name + "/jump.png";
 
     this->textures[Nothing] = loadActionTexture(nothing);
     this->textures[Idle]    = loadActionTexture(idle);
     this->textures[Run]     = loadActionTexture(run);
     this->textures[Jump]    = loadActionTexture(jump);
     this->textures[Jump]    = loadActionTexture(jump);
-    this->tag               = LoadTexture(tag.c_str());
+
+    /* Tag */
+    std::string tag_path = "assets/items/tag.png";
+    this->tagTexture     = LoadTexture(tag_path.c_str());
+
+    /* Health Bar */
+    std::string health_left         = "assets/items/healthBar/left.png";
+    std::string health_middle       = "assets/items/healthBar/middle.png";
+    std::string health_middle_empty = "assets/items/healthBar/middle_empty.png";
+    std::string health_right        = "assets/items/healthBar/right.png";
+    std::string hp_logo             = "assets/items/healthBar/hp_logo.png";
+
+    this->healthBarTexture.left          = LoadTexture(health_left.c_str());
+    this->healthBarTexture.middle        = LoadTexture(health_middle.c_str());
+    this->healthBarTexture.middle_empty  = LoadTexture(health_middle_empty.c_str());
+    this->healthBarTexture.right         = LoadTexture(health_right.c_str());
+    this->healthBarTexture.hp_logo       = LoadTexture(hp_logo.c_str());
+
+    /* Kills */
+    std::string kills_path = "assets/items/kills.png";
+    this->killsTexture     = LoadTexture(kills_path.c_str());
+
+    /* Bullets */
+    std::string bullets_path = "assets/items/bullets.png";
+    this->bulletsTexture     = LoadTexture(bullets_path.c_str());
+
+    /* Numbers */
+    for (int i = 0; i < 10; i++) {
+        std::string number_path = "assets/items/numbers/" + std::to_string(i) + ".png";
+        this->numbersTexture[i] = LoadTexture(number_path.c_str()); 
+    }
+    
 }

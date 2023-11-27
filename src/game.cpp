@@ -21,11 +21,18 @@ Game::Game(int width, int height) {
     // Init map
     this->map.load("assets/map/map.txt");
     
-    // Init camera
-    this->camera.target   = { GetScreenWidth()/2.0f, GetScreenHeight()/2.0f };
+    // Init main camera
+    this->camera.target   = { width/2.0f, height/2.0f };
     this->camera.offset   = { width/2.0f, height/2.0f };
     this->camera.zoom     = ZOOM;
     this->camera.rotation = 0.0f;
+
+    // Init foreground camera (player stats, menu)
+    this->fixedCamera.target   = { 0 };
+    this->fixedCamera.offset   = { 0 };
+    this->fixedCamera.zoom     = ZOOM;
+    this->fixedCamera.rotation = 0.0f;
+
 
     // Init player
     this->player.setName();
@@ -63,8 +70,10 @@ void Game::updateCamera() {
     float fractionSpeed   = Y_VELOCITY;
 
     this->camera.offset = { GetScreenWidth()/2.0f, GetScreenHeight()/2.0f };
+    
     Vector2 diff  = Vector2Subtract(this->player.getPosition(), this->camera.target);
     float length  = Vector2Length(diff);
+
 
     if (length > minEffectLength) {
         float speed = fmaxf(fractionSpeed * length, minSpeed);
@@ -90,14 +99,19 @@ std::vector<Enemy>& Game::getEnemies() {
 
 void Game::update() {
     this->updateCamera();
-    this->player.update();
 
-    for (int i = 0; i < (int)this->enemies.size(); i++) {
-        if(this->enemies[i].isAlive()) {
-            this->enemies[i].update();
+    if(this->player.isAlive()) {
+        this->player.update();
+
+        for (int i = 0; i < (int)this->enemies.size(); i++) {
+            if(this->enemies[i].isAlive()) {
+                this->enemies[i].update();
+            } else {
+                // Deleting the killed enemy from the vector
+                this->enemies.erase(this->enemies.begin() + i);
+            }
         }
     }
-    
 }
 
 void Game::render() {
@@ -110,18 +124,22 @@ void Game::render() {
 }
 
 void Game::draw() {
+    BeginMode2D(this->fixedCamera);
+        this->player.drawStats();
+    EndMode2D();
+    
     BeginMode2D(this->camera);
         
         this->map.draw();
-        
-        if(this->player.isAlive()) {
-            this->player.draw();
-        }
 
         for (int i = 0; i < (int)this->enemies.size(); i++) {
             if(this->enemies[i].isAlive()) {
                 this->enemies[i].draw();
             }
+        }
+
+        if(this->player.isAlive()) {
+            this->player.draw();
         }
 
     EndMode2D();

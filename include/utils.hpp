@@ -20,7 +20,7 @@ constexpr float Y_VELOCITY       =   X_VELOCITY * 2.8;
 constexpr float ZOOM             =   1.5f;
 constexpr int   X_FRAME_SPEED    =   12;
 constexpr int   Y_FRAME_SPEED    =   X_FRAME_SPEED * 2;
-constexpr int   MAX_BULLETS      =   10000;
+constexpr int   MAX_BULLETS      =   99;
 constexpr float BULLET_VELOCITY  =   8.0f;
 constexpr int   NB_ENEMIES       =   1;
 constexpr int   MAX_HEALTH       =   10;
@@ -28,6 +28,13 @@ constexpr int   MAX_HEALTH       =   10;
 
 
 namespace utils {
+    
+    namespace shooter {
+        enum type {
+            Player = 0,
+            Enemy  = 1,
+        };
+    };
     
     enum Direction {
         Left  = 0,

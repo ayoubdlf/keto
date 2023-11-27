@@ -15,6 +15,7 @@ class Game {
         Map map;
         
         Camera2D camera;
+        Camera2D fixedCamera;
 
         void draw();
         void loadTextures();

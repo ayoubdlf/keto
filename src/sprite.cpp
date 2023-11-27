@@ -34,7 +34,12 @@ int Sprite::getHealth() {
 }
 
 bool Sprite::isAlive() {
-    return this->health > 0;
+    if(this->health <= 0) {
+        this->velocity = {0.0f, 0.0f};
+        return false;
+    }
+
+    return true;
 }
 
 void Sprite::damage(int damage) {

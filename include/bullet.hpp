@@ -16,12 +16,13 @@ class Bullet {
         float     angle;
         float     scale;
         bool      active;
+        shooter::type shooter;
     public:
         Bullet();
         ~Bullet();
         void draw();
         void update();
-        void fire(Vector2 position, float angle);
+        void fire(shooter::type shooter, Vector2 position, float angle);
         bool isActive();
         void handleCollision();
         void loadTexture();

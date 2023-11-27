@@ -2,17 +2,21 @@
 #include "../include/game.hpp"
 
 Gun::Gun() {
-    this->available = false;
-    this->canShoot  = false;
+    this->available   = false;
+    this->canShoot    = false;
+    this->shooter     = shooter::Enemy;
+    this->bulletsLeft = 0;
 }
 
-Gun::~Gun() {}
+Gun::~Gun() {
+    ShowCursor();
+}
 
 void Gun::useGun(shooter::type shooter) {
     this->throwGun();
     this->loadTexture();
     this->available = true;
-    this->shooter   = shooter;
+    this->shooter = shooter;
 
     this->source = { 0.0f, 0.0f, (float)this->texture.width, (float)this->texture.height };
     this->scale  = 0.5f;
@@ -22,15 +26,34 @@ void Gun::useGun(shooter::type shooter) {
     if(this->shooter == shooter::Player) { this->load(MAX_BULLETS); }
     if(this->shooter == shooter::Enemy)  { this->load(MAX_BULLETS * 4); }
 
+    if(this->shooter == shooter::Player) {
+        HideCursor();
+    }
+
 }
 
 void Gun::throwGun() {
     this->available = false;
+    if(this->shooter == shooter::Player) {
+        ShowCursor();
+    }
+}
+
+void Gun::drawTarget() {
+    Vector2 mouse = GetScreenToWorld2D(GetMousePosition(), Game::getInstance()->getCamera());
+    float scale = 1.4f;
+    mouse.x -= (this->target.width * scale) / 2;
+    mouse.y -= (this->target.height * scale) / 2;
+    DrawTextureEx(this->target, mouse, 0.0f, scale, BLACK);
 }
 
 void Gun::draw() {
     if(this->available) {
         DrawTexturePro(this->texture, this->source, this->dest, this->origin, this->rotation, WHITE);
+
+        if(this->shooter == shooter::Player) {
+            this->drawTarget();
+        }
 
         /* Bullets */
         for (Bullet bullet : this->bullets) {
@@ -140,12 +163,12 @@ void Gun::fire() {
         float angle = this->rotation * DEG2RAD;
 
         Vector2 bulletPos = {
-            .x = this->position.x + (std::abs(this->source.width) * this->scale * 1.5f) * cos(angle),
-            .y = this->position.y + (std::abs(this->source.width) * this->scale * 1.5f) * sin(angle)
+            .x = this->position.x + (std::abs(this->source.width) * this->scale * 1.8f) * cos(angle),
+            .y = this->position.y + (std::abs(this->source.width) * this->scale * 1.8f) * sin(angle)
         };
 
         this->bullets.emplace_back();
-        this->bullets.back().fire(bulletPos, angle); // Firing the bullet
+        this->bullets.back().fire(shooter::Player, bulletPos, angle); // Firing the bullet
 
         this->bulletsLeft -= 1;
 
@@ -163,9 +186,11 @@ void Gun::load(int bullets) {
 }
 
 void Gun::loadTexture() {
-    // std::string path = "assets/items/gun.png";
     std::string path = "assets/items/pistol.png";
     this->texture = LoadTexture(path.c_str()); 
+
+    std::string targetPath = "assets/items/target.png";
+    this->target = LoadTexture(targetPath.c_str());
 }
 
 int Gun::getBulletsLeft() {
