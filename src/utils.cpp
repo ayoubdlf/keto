@@ -16,32 +16,6 @@ void utils::mapToVector(std::ifstream *file, std::vector<std::vector<int>> *map)
     }
 }
 
-int utils::getMax(std::vector<std::vector<int>> vect) {
-    int max = vect[0][0];
-    
-    for(int i = 0; i < (int)vect.size(); i++) {
-        for(int j = 0; j < (int)vect[i].size(); j++) {
-            if(vect[i][j] > max) {
-                max = vect[i][j];
-            }
-        }
-    }
-
-    return max;
-    
-}
-
-std::string utils::addZeros(int number, int max) {
-    int max_length = std::to_string(max).length();
-    std::string std_number = std::to_string(number);
-
-    while ((int)std_number.length() < max_length) {
-        std_number.insert(0, "0");
-    }
-
-    return std_number;
-}
-
 bool utils::isInsideVect(int value, std::vector<int> vect) {
     for(int val : vect) {
         if (val == value) {
@@ -52,7 +26,7 @@ bool utils::isInsideVect(int value, std::vector<int> vect) {
     return false;
 }
 
-int utils::findIndexById(int id, std::vector<utils::Texture> vect) {
+int utils::findIndexById(int id, std::vector<utils::CustomTexture> vect) {
 
     for(int i = 0; i < (int)vect.size(); i++) {
         if(vect[i].id == id) {
@@ -64,8 +38,21 @@ int utils::findIndexById(int id, std::vector<utils::Texture> vect) {
 }
 
 utils::TileType utils::getTileTypeByCode(int code) {
-    if(code == 0) { return utils::Air; }
-    if(code != 0) { return utils::Obstacle; }
+    if(code == 0)              { return utils::Air; }
+    if(code == 1)              { return utils::PowerUp_Coin; }
+    if(code == 2)              { return utils::PowerUp_Heart; }
+    if(code == 3)              { return utils::PowerUp_Bullet; }
+    if(code == 4)              { return utils::PowerUp_MedKit; }
+    if(code == 5)              { return utils::PowerUp_LuckyBox; }
+    
+    return utils::Obstacle;
+}
 
-    return utils::Error; // It will fire i know
+bool utils::isPowerUp(utils::TileType type) {
+
+    if(type == PowerUp_Bullet || type == PowerUp_Coin || type == PowerUp_Heart || type == PowerUp_LuckyBox || type == PowerUp_MedKit ) {
+        return true;
+    }
+
+    return false;
 }

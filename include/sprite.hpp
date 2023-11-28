@@ -16,11 +16,6 @@ enum Action {
     Jump    = 3
 };
 
-struct ActionTexture {
-    Texture2D texture;
-    Rectangle frames;
-};
-
 class Sprite {
     protected:
         std::string name;
@@ -31,13 +26,15 @@ class Sprite {
         bool isJumping;
         int health;
 
-        int action; // idle, running, jumping, dead
+        int action; // idle, running, jumping
+        std::array<CustomTexture, 4> textures;
         
         Gun gun;
     public:
         Sprite();
         ~Sprite();
         void setName(std::string name="keto");
+        std::string getName();
         Vector2 getPosition();
         void updatePosition();
         void heal(int health);
@@ -46,6 +43,7 @@ class Sprite {
         bool isAlive();
         Rectangle getRect();
         void drawHealthBar();
+        CustomTexture loadCustomTexture(std::string path);
 };
 
 

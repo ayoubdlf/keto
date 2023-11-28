@@ -32,7 +32,7 @@ void Bullet::handleCollision() {
     Rectangle bullet = {this->position.x, this->position.y, (float)this->texture.width * this->scale, (float)this->texture.height * this->scale};
     
     /* Collision with tiles */
-    for(Tile obstacle : Game::getInstance()->getObstacles()) {
+    for(Tile obstacle : Game::getInstance()->getMap().getObstacles()) {
         Rectangle tile   = { obstacle.pos.x, obstacle.pos.y, (float)obstacle.texture.width, (float)obstacle.texture.height };
 
         if (CheckCollisionRecs(bullet, tile)) {

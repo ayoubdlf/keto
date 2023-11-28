@@ -3,6 +3,7 @@
 
 #include <iostream>
 #include <raylib.h>
+#include <random>
 #include "sprite.hpp"
 
 using namespace utils;
@@ -16,29 +17,38 @@ struct healthBar {
     Texture2D hp_logo;
 };
 
+struct stats {
+    int health;
+    int kills;
+    int bullets; // bulletsLeft
+    int coins;
+};
+
 class Player : public Sprite {
     private:
-        bool isJumping;
         int kills;
+        int coins;
+
+        bool isJumping;
         
         Direction direction; // Player direction: left or right
         int currentFrame;
         int framesCounter;
         int framesSpeed;
-        std::array<ActionTexture, 4> textures;
 
         Texture2D tagTexture;
         Texture2D killsTexture;
         Texture2D bulletsTexture;
+        Texture2D coinsTexture;
         healthBar healthBarTexture;
         std::array<Texture2D, 10> numbersTexture;
 
-        ActionTexture loadActionTexture(std::string path);
         void handleCollisions();
         void drawTag();
         void drawHealthBar();
         void drawKills();
         void drawBullets();
+        void drawCoins();
         void drawNumbers(Vector2 position, Texture2D texture, int value);
     public:
         Player();
@@ -50,6 +60,8 @@ class Player : public Sprite {
         Vector2 getPosition();
         void kill(); // When the player kills an enemy 
         void loadTextures();
+        stats getStats();
+        void loadData(json data);
 };
 
 

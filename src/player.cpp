@@ -4,6 +4,7 @@
 Player::Player() {
     this->position      = {100.0f, 10.0f};
     this->kills         = 0;
+    this->coins         = 0;
     this->isJumping     = false;
     this->action        = Nothing;
     this->currentFrame  = 0;
@@ -63,10 +64,18 @@ void Player::drawBullets() {
     this->drawNumbers(position, this->bulletsTexture, this->gun.getBulletsLeft());
 }
 
+void Player::drawCoins() {
+    Vector2 position = { 5.0f, 52.0f };
+
+    DrawTextureEx(this->coinsTexture, position, 0.0f, 1.0f, WHITE);
+    this->drawNumbers(position, this->coinsTexture, this->coins);
+}
+
 void Player::drawStats() {
     this->drawHealthBar();
     this->drawKills();
     this->drawBullets();
+    this->drawCoins();
 }
 
 void Player::draw() {
@@ -119,6 +128,11 @@ void Player::handleInputs() {
 
     if(IsKeyDown(KEY_N))    { this->gun.throwGun(); }
     if(IsKeyDown(KEY_G))    { this->gun.useGun(shooter::type::Player); }
+
+    // TODO: remove this
+    if(IsKeyPressed(KEY_L))    { Game::getInstance()->load(); }
+    if(IsKeyDown(KEY_LEFT_CONTROL) && IsKeyPressed(KEY_S))    { Game::getInstance()->save(); }
+
     if(IsMouseButtonPressed(MOUSE_BUTTON_LEFT)) { this->gun.fire(); }
     
 }
@@ -129,8 +143,14 @@ Vector2 Player::getPosition() {
 
 void Player::handleCollisions() {
     
+    // PLAYER OUTSIDE MAP
+    // if((this->position.x + this->width) < 0 || this->position.x > Game::getInstance()->getMap().getWidth() || (this->position.y + this->height) < 0 || this->position.y > Game::getInstance()->getMap().getHeight())
+    if(this->position.y - this->height * 6 > Game::getInstance()->getMap().getHeight()) {
+        this->health = 0;
+    }
+
     // X AXIS COLLISIONS
-    for(Tile obstacle : Game::getInstance()->getObstacles()) {
+    for(Tile obstacle : Game::getInstance()->getMap().getObstacles()) {
         Rectangle tile   = {obstacle.pos.x, obstacle.pos.y, (float)obstacle.texture.width, (float)obstacle.texture.height};
         Rectangle player = {this->position.x, this->position.y - this->velocity.y, this->width, this->height};
         
@@ -143,7 +163,7 @@ void Player::handleCollisions() {
     }
 
     // Y AXIS COLLISIONS
-    for(Tile obstacle : Game::getInstance()->getObstacles()) {
+    for(Tile obstacle : Game::getInstance()->getMap().getObstacles()) {
         Rectangle tile   = {obstacle.pos.x, obstacle.pos.y, (float)obstacle.texture.width, (float)obstacle.texture.height};
         Rectangle player = {this->position.x, this->position.y, this->width, this->height};
         
@@ -165,30 +185,63 @@ void Player::handleCollisions() {
         
     }
 
-}
+    // POWER UPS COLLISION
+    std::vector<Tile> powerUps = Game::getInstance()->getMap().getPowerUps();
 
-ActionTexture Player::loadActionTexture(std::string path) {
-    Texture2D texture = LoadTexture(path.c_str());
-
-    if(strstr(path.c_str(), this->name.c_str())) {
-        this->width  =  this->textures[Nothing].texture.width;
-        this->height =  this->textures[Nothing].texture.height;
-    }
-
-    return {
-        .texture = texture,
-        .frames  = {
-            0.0f,
-            0.0f,
-            this->width,
-            this->height
+    for (int i = 0; i < (int)powerUps.size(); i++) {
+        Rectangle powerUp   = {powerUps[i].pos.x, powerUps[i].pos.y, (float)powerUps[i].frames.width, (float)powerUps[i].frames.height};
+        Rectangle player = {this->position.x, this->position.y - this->velocity.y, this->width, this->height};
+        
+        if (CheckCollisionRecs(player, powerUp)) {
+            std::random_device rd;
+            std::mt19937 mt(rd());
+            std::uniform_int_distribution<int> dist(PowerUp_Bullet, PowerUp_MedKit); // [2-5]
+            
+            switch (powerUps[i].type) {
+                case PowerUp_Bullet   : this->gun.load(5)     ; Game::getInstance()->alert("+5 bullets") ; break;
+                case PowerUp_Coin     : this->coins += 1      ; Game::getInstance()->alert("+1 coin")    ; break;
+                case PowerUp_Heart    : this->heal(1)         ; Game::getInstance()->alert("+1 heart")   ; break;
+                case PowerUp_MedKit   : this->heal(MAX_HEALTH); Game::getInstance()->alert("FULL HEALTH"); break;
+                case PowerUp_LuckyBox :
+                    switch (dist(mt)) {
+                        case PowerUp_Bullet   : this->gun.load(10)    ; Game::getInstance()->alert("+10 bullets"); break;
+                        case PowerUp_Coin     : this->coins += 10     ; Game::getInstance()->alert("+10 coins")  ; break;
+                        case PowerUp_Heart    : this->heal(5)         ; Game::getInstance()->alert("+5 hearts")  ; break;
+                        case PowerUp_MedKit   : this->heal(MAX_HEALTH); Game::getInstance()->alert("FULL HEALTH"); break;
+                        default: break;
+                    }
+                
+                default: break;
+            }
+            
+            Game::getInstance()->getMap().usePowerUp(i);
+            break;
         }
-    };
-
+    }
 }
 
 void Player::kill() {
     this->kills += 1;
+}
+
+stats Player::getStats() {
+    return {
+        this->health,
+        this->kills,
+        this->gun.getBulletsLeft(), // bulletsLeft
+        this->coins,
+    };
+}
+
+void Player::loadData(json data) {
+    this->name       = data["name"];
+    this->health     = data["hp"].get<int>();
+    this->kills      = data["kills"].get<int>();
+    this->coins      = data["coins"].get<int>();
+    this->position.x = data["position"]["x"].get<int>();
+    this->position.y = data["position"]["y"].get<int>();
+
+    this->gun.loadData(data);
 }
 
 void Player::loadTextures() {
@@ -198,22 +251,22 @@ void Player::loadTextures() {
     std::string run         = "assets/players/" + this->name + "/run.png";
     std::string jump        = "assets/players/" + this->name + "/jump.png";
 
-    this->textures[Nothing] = loadActionTexture(nothing);
-    this->textures[Idle]    = loadActionTexture(idle);
-    this->textures[Run]     = loadActionTexture(run);
-    this->textures[Jump]    = loadActionTexture(jump);
-    this->textures[Jump]    = loadActionTexture(jump);
+    this->textures[Nothing] = loadCustomTexture(nothing);
+    this->textures[Idle]    = loadCustomTexture(idle);
+    this->textures[Run]     = loadCustomTexture(run);
+    this->textures[Jump]    = loadCustomTexture(jump);
+    this->textures[Jump]    = loadCustomTexture(jump);
 
     /* Tag */
     std::string tag_path = "assets/items/tag.png";
     this->tagTexture     = LoadTexture(tag_path.c_str());
 
     /* Health Bar */
-    std::string health_left         = "assets/items/healthBar/left.png";
-    std::string health_middle       = "assets/items/healthBar/middle.png";
-    std::string health_middle_empty = "assets/items/healthBar/middle_empty.png";
-    std::string health_right        = "assets/items/healthBar/right.png";
-    std::string hp_logo             = "assets/items/healthBar/hp_logo.png";
+    std::string health_left         = "assets/items/stats/healthBar/left.png";
+    std::string health_middle       = "assets/items/stats/healthBar/middle.png";
+    std::string health_middle_empty = "assets/items/stats/healthBar/middle_empty.png";
+    std::string health_right        = "assets/items/stats/healthBar/right.png";
+    std::string hp_logo             = "assets/items/stats/healthBar/hp_logo.png";
 
     this->healthBarTexture.left          = LoadTexture(health_left.c_str());
     this->healthBarTexture.middle        = LoadTexture(health_middle.c_str());
@@ -222,16 +275,20 @@ void Player::loadTextures() {
     this->healthBarTexture.hp_logo       = LoadTexture(hp_logo.c_str());
 
     /* Kills */
-    std::string kills_path = "assets/items/kills.png";
+    std::string kills_path = "assets/items/stats/kills.png";
     this->killsTexture     = LoadTexture(kills_path.c_str());
 
     /* Bullets */
-    std::string bullets_path = "assets/items/bullets.png";
+    std::string bullets_path = "assets/items/stats/bullets.png";
     this->bulletsTexture     = LoadTexture(bullets_path.c_str());
 
     /* Numbers */
+    std::string coins_path = "assets/items/stats/coins.png";
+    this->coinsTexture     = LoadTexture(coins_path.c_str());
+
+    /* Numbers */
     for (int i = 0; i < 10; i++) {
-        std::string number_path = "assets/items/numbers/" + std::to_string(i) + ".png";
+        std::string number_path = "assets/items/stats/numbers/" + std::to_string(i) + ".png";
         this->numbersTexture[i] = LoadTexture(number_path.c_str()); 
     }
     

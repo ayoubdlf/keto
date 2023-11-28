@@ -13,11 +13,8 @@ class Enemy : public Sprite {
         int currentFrame;
         int framesCounter;
         int framesSpeed;
-        std::array<ActionTexture, 4> textures;
 
         int brainCounter; // will help use to determine when the enemy will shoot
-
-        ActionTexture loadActionTexture(std::string path);
         void handleCollisions();
     public:
         Enemy();

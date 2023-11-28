@@ -33,10 +33,8 @@ void Gun::useGun(shooter::type shooter) {
 }
 
 void Gun::throwGun() {
+    ShowCursor();
     this->available = false;
-    if(this->shooter == shooter::Player) {
-        ShowCursor();
-    }
 }
 
 void Gun::drawTarget() {
@@ -185,8 +183,12 @@ void Gun::load(int bullets) {
     }
 }
 
+void Gun::loadData(json data) {
+    this->bulletsLeft = data["bullets"].get<int>();
+}
+
 void Gun::loadTexture() {
-    std::string path = "assets/items/pistol.png";
+    std::string path = "assets/items/gun.png";
     this->texture = LoadTexture(path.c_str()); 
 
     std::string targetPath = "assets/items/target.png";

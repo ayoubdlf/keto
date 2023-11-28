@@ -17,6 +17,13 @@ Game::Game(int width, int height) {
 
     InitWindow(width, height, "Keto");
     SetTargetFPS(60);
+    SetTextureFilter(GetFontDefault().texture, TEXTURE_FILTER_POINT);
+
+    // Setting alerts to false
+    this->alertMessage.active = false;
+
+    // Init level
+    this->level = 1;
 
     // Init map
     this->map.load("assets/map/map.txt");
@@ -85,12 +92,19 @@ Camera2D Game::getCamera() {
     return this->camera;
 }
 
-std::vector<Tile>& Game::getObstacles() {
-    return this->map.getObstacles();
+Map& Game::getMap() {
+    return this->map;
 }
 
 Player& Game::getPlayer() {
     return this->player;
+}
+
+void Game::alert(std::string message) {
+    this->alertMessage.message  = message;
+    this->alertMessage.position = { this->player.getPosition().x, this->player.getPosition().y - this->player.getRect().height * 0.2f };
+    this->alertMessage.time     = 45;
+    this->alertMessage.active   = true;
 }
 
 std::vector<Enemy>& Game::getEnemies() {
@@ -99,6 +113,7 @@ std::vector<Enemy>& Game::getEnemies() {
 
 void Game::update() {
     this->updateCamera();
+    this->map.update();
 
     if(this->player.isAlive()) {
         this->player.update();
@@ -142,7 +157,57 @@ void Game::draw() {
             this->player.draw();
         }
 
+        // Show the alert message right on top of the player
+        if(this->alertMessage.active) {
+            int textMiddle = (MeasureText(this->alertMessage.message.c_str(), 10.0f))/2;
+            DrawTextEx(GetFontDefault(), this->alertMessage.message.c_str(), this->alertMessage.position, 10.0f, 1.0f, BLACK);
+            this->alertMessage.position = { this->player.getRect().x + this->player.getRect().width/2 - textMiddle, this->alertMessage.position.y - 0.5f };
+            this->alertMessage.time    -= 1;
+            this->alertMessage.active   = (this->alertMessage.time != 0);
+        }
+
     EndMode2D();
+}
+
+void Game::load() {
+    std::ifstream file("data.json");
+    
+    if (file.is_open()) {
+        json data;
+        file >> data;
+
+        this->level = data["level"].get<int>();
+        this->player.loadData(data);
+    }
+
+    file.close();
+}
+
+void Game::save() {
+
+    json data = {
+        /* Game */
+        { "level"   , this->level },
+        /* Player */
+        { "name"    , this->player.getName() },
+        { "hp"      , this->player.getStats().health },
+        { "kills"   , this->player.getStats().kills },
+        { "bullets" , this->player.getStats().bullets  },
+        { "coins"   , this->player.getStats().coins  },
+        { "position", {
+            { "x", this->player.getPosition().x },
+            { "y", this->player.getPosition().y },
+        }}
+    };
+
+    std::ofstream file("data.json");
+
+    if (file.is_open()) {
+        file << data.dump();
+    }
+
+    file.close();
+
 }
 
 void Game::loadTextures() {

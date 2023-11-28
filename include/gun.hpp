@@ -42,6 +42,7 @@ class Gun {
         int  getBulletsLeft();
         void updatePlayerBehaviour(Vector2 position);
         void updateEnemyBehaviour(Vector2 position);
+        void loadData(json data);
 };
 
 

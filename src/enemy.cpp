@@ -108,7 +108,7 @@ Vector2 Enemy::getPosition() {
 void Enemy::handleCollisions() {
     
     // X AXIS COLLISIONS
-    for(Tile obstacle : Game::getInstance()->getObstacles()) {
+    for(Tile obstacle : Game::getInstance()->getMap().getObstacles()) {
         Rectangle tile  = {obstacle.pos.x, obstacle.pos.y, (float)obstacle.texture.width, (float)obstacle.texture.height};
         Rectangle enemy = {this->position.x, this->position.y - this->velocity.y, this->width, this->height};
         
@@ -121,7 +121,7 @@ void Enemy::handleCollisions() {
     }
 
     // Y AXIS COLLISIONS
-    for(Tile obstacle : Game::getInstance()->getObstacles()) {
+    for(Tile obstacle : Game::getInstance()->getMap().getObstacles()) {
         Rectangle tile   = {obstacle.pos.x, obstacle.pos.y, (float)obstacle.texture.width, (float)obstacle.texture.height};
         Rectangle enemy = {this->position.x, this->position.y, this->width, this->height};
         
@@ -145,32 +145,12 @@ void Enemy::handleCollisions() {
 
 }
 
-ActionTexture Enemy::loadActionTexture(std::string path) {
-    Texture2D texture = LoadTexture(path.c_str());
-
-    if(strstr(path.c_str(), this->name.c_str())) {
-        this->width  =  this->textures[Nothing].texture.width;
-        this->height =  this->textures[Nothing].texture.height;
-    }
-
-    return {
-        .texture = texture,
-        .frames  = {
-            0.0f,
-            0.0f,
-            this->width,
-            this->height
-        }
-    };
-
-}
-
 void Enemy::loadTextures() {
     std::string nothing = "assets/players/" + this->name + "/" + this->name + ".png";
     std::string idle    = "assets/players/" + this->name + "/idle.png";
     std::string run     = "assets/players/" + this->name + "/run.png";
 
-    this->textures[Nothing] = loadActionTexture(nothing);
-    this->textures[Idle]    = loadActionTexture(idle);
-    this->textures[Run]     = loadActionTexture(run);
+    this->textures[Nothing] = loadCustomTexture(nothing);
+    this->textures[Idle]    = loadCustomTexture(idle);
+    this->textures[Run]     = loadCustomTexture(run);
 }

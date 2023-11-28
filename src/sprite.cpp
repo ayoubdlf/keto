@@ -14,6 +14,10 @@ void Sprite::setName(std::string name) {
     this->name = name;
 }
 
+std::string Sprite::getName() {
+    return this->name;
+}
+
 Rectangle Sprite::getRect() {
     return {
         .x      = this->position.x,
@@ -23,10 +27,14 @@ Rectangle Sprite::getRect() {
     };
 }
 
-void Sprite::heal(int health) {
-    if(this->health < 10) {
-        this->health += health;
+void Sprite::heal(int health) {    
+    this->health += health;
+   
+    if(this->health > 10) {
+        this->health = MAX_HEALTH;
     }
+
+    // this->health = (this->health + health  > 10) ? MAX_HEALTH : this->health + health;
 }
 
 int Sprite::getHealth() {    
@@ -63,4 +71,22 @@ void Sprite::drawHealthBar() {
 
     DrawRectangleLinesEx({posx, posy, float(this->width * 0.75), 5}, 0.5f, BLACK);
     DrawRectangle(posx, posy, (this->width * 0.8) * factor, 5, RED);
+}
+
+CustomTexture Sprite::loadCustomTexture(std::string path) {
+    Texture2D texture = LoadTexture(path.c_str());
+
+    this->width  =  this->textures[Nothing].texture.width;
+    this->height =  this->textures[Nothing].texture.height;
+
+    return {
+        .texture = texture,
+        .frames  = {
+            0.0f,
+            0.0f,
+            this->width,
+            this->height
+        }
+    };
+
 }

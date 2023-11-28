@@ -2,6 +2,7 @@
 #define GAME_HPP
 
 #include <raylib.h>
+#include <fstream>
 #include "utils.hpp"
 #include "player.hpp"
 #include "enemy.hpp"
@@ -10,12 +11,15 @@
 
 class Game {
     private:
+        int level;
         Player player;
         std::vector<Enemy> enemies;
         Map map;
         
         Camera2D camera;
         Camera2D fixedCamera;
+
+        AlertMessage alertMessage;
 
         void draw();
         void loadTextures();
@@ -30,11 +34,15 @@ class Game {
         void update();
         void render();
         void updateCamera();
+        void load();
+        void save();
 
+        void alert(std::string message);
         Camera2D getCamera();
-        std::vector<Tile>& getObstacles();
+        Map& getMap();
         Player& getPlayer();
         std::vector<Enemy>& getEnemies();
+        
 };
 
 

@@ -8,6 +8,9 @@
 #include <vector>
 #include <cstring>
 #include <cmath>
+#include <nlohmann/json.hpp>
+
+using json = nlohmann::json;
 
 //  START DEFINES
 constexpr int   WIDTH            =   960;
@@ -28,6 +31,21 @@ constexpr int   MAX_HEALTH       =   10;
 
 
 namespace utils {
+
+    struct AlertMessage {
+        int time;
+        bool active;
+        Vector2 position;
+        std::string message;
+    };
+
+    // CustomTexture refers to a texture(spritesheet) that can possibly move
+    // By moving a mean drawing portioins of this texture(spritesheet) at a time
+    struct CustomTexture {
+        int id;
+        Texture2D texture;
+        Rectangle frames;
+    };
     
     namespace shooter {
         enum type {
@@ -40,41 +58,30 @@ namespace utils {
         Left  = 0,
         Right = 1
     };
-        
+
     enum TileType {
-        Air = 0,
-        Obstacle = 1,
-        Error = -1
+        Air              = 0,
+        Obstacle         = 1,
+        
+        PowerUp_Bullet   = 2,
+        PowerUp_Coin     = 3,
+        PowerUp_Heart    = 4,
+        PowerUp_MedKit   = 5,
+        PowerUp_LuckyBox = 6
     };
 
     struct Tile {
         Texture2D texture;
         Vector2 pos;
         utils::TileType type;
-    };
-
-    struct Texture {
-        int id;
-        Texture2D texture;
+        Rectangle frames;
+        int currentFrame;
     };
     
     /*
     *   Saves map file data to vector
     */
     void mapToVector(std::ifstream *file, std::vector<std::vector<int>> *map);
-
-    /*
-    *   Get max value inside a 2d vector
-    */
-    int getMax(std::vector<std::vector<int>> vect);
-
-    /*
-    *   Number should have same length as max
-    *   Example:
-    *       input : number=1, max=123
-    *       output: 001
-    */
-    std::string addZeros(int number, int max);
 
     /*
     *   Returns if value is inside the vector `vect`
@@ -84,13 +91,17 @@ namespace utils {
     /*
     *   Finds in which index `id` is, -1 otherwise
     */
-    int findIndexById(int id, std::vector<utils::Texture> textureVect);
+    int findIndexById(int id, std::vector<utils::CustomTexture> textureVect);
 
     /*
     *   Get value in map
     */
     utils::TileType getTileTypeByCode(int code);
-}
 
+    /*
+    *   Check if tile is a poweruP
+    */
+    bool isPowerUp(utils::TileType type);
+}
 
 #endif // UTILS_HPP
