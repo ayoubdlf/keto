@@ -11,6 +11,11 @@ Player::Player() {
     this->framesCounter = 0;
     this->framesSpeed   = X_FRAME_SPEED; 
     this->direction     = Right;
+
+}
+
+void Player::useGun() {
+    this->gun.useGun(shooter::type::Player);
 }
 
 void Player::drawTag() {
@@ -125,9 +130,6 @@ void Player::handleInputs() {
     if(IsKeyDown(KEY_RIGHT))                  { this->velocity.x =  X_VELOCITY * DELTA * SCALE; this->action = Run;  this->direction = Right; }
     if(IsKeyDown(KEY_LEFT))                   { this->velocity.x = -X_VELOCITY * DELTA * SCALE; this->action = Run;  this->direction = Left;  }
     if(IsKeyDown(KEY_UP) && !this->isJumping) { this->velocity.y = -Y_VELOCITY * DELTA * SCALE; this->action = Jump; this->isJumping = true; this->framesSpeed = Y_FRAME_SPEED; }
-
-    if(IsKeyDown(KEY_N))    { this->gun.throwGun(); }
-    if(IsKeyDown(KEY_G))    { this->gun.useGun(shooter::type::Player); }
 
     // TODO: remove this
     if(IsKeyPressed(KEY_L))    { Game::getInstance()->load(); }

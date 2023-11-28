@@ -8,12 +8,9 @@ Gun::Gun() {
     this->bulletsLeft = 0;
 }
 
-Gun::~Gun() {
-    ShowCursor();
-}
+Gun::~Gun() {}
 
 void Gun::useGun(shooter::type shooter) {
-    this->throwGun();
     this->loadTexture();
     this->available = true;
     this->shooter = shooter;
@@ -25,33 +22,11 @@ void Gun::useGun(shooter::type shooter) {
     this->bulletsLeft = 0;
     if(this->shooter == shooter::Player) { this->load(MAX_BULLETS); }
     if(this->shooter == shooter::Enemy)  { this->load(MAX_BULLETS * 4); }
-
-    if(this->shooter == shooter::Player) {
-        HideCursor();
-    }
-
-}
-
-void Gun::throwGun() {
-    ShowCursor();
-    this->available = false;
-}
-
-void Gun::drawTarget() {
-    Vector2 mouse = GetScreenToWorld2D(GetMousePosition(), Game::getInstance()->getCamera());
-    float scale = 1.4f;
-    mouse.x -= (this->target.width * scale) / 2;
-    mouse.y -= (this->target.height * scale) / 2;
-    DrawTextureEx(this->target, mouse, 0.0f, scale, BLACK);
 }
 
 void Gun::draw() {
     if(this->available) {
         DrawTexturePro(this->texture, this->source, this->dest, this->origin, this->rotation, WHITE);
-
-        if(this->shooter == shooter::Player) {
-            this->drawTarget();
-        }
 
         /* Bullets */
         for (Bullet bullet : this->bullets) {
@@ -190,9 +165,6 @@ void Gun::loadData(json data) {
 void Gun::loadTexture() {
     std::string path = "assets/items/gun.png";
     this->texture = LoadTexture(path.c_str()); 
-
-    std::string targetPath = "assets/items/target.png";
-    this->target = LoadTexture(targetPath.c_str());
 }
 
 int Gun::getBulletsLeft() {

@@ -15,7 +15,7 @@ class Game {
         Player player;
         std::vector<Enemy> enemies;
         Map map;
-        
+        Texture2D target; // custom cursor
         Camera2D camera;
         Camera2D fixedCamera;
 
@@ -23,6 +23,8 @@ class Game {
 
         void draw();
         void loadTextures();
+        void updateCamera();
+        void drawTarget();
 
         static Game* instance;
     public:
@@ -33,7 +35,6 @@ class Game {
         void input();
         void update();
         void render();
-        void updateCamera();
         void load();
         void save();
 

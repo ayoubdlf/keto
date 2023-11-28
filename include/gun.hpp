@@ -11,7 +11,6 @@ using namespace utils;
 class Gun {
     private:
         Texture2D     texture;
-        Texture2D     target;
         Vector2       position;
         bool          available;
         bool          canShoot; // To avoid the shooter shooting himself
@@ -28,12 +27,10 @@ class Gun {
         std::vector<Bullet> bullets;
 
         void updateBullets();
-        void drawTarget();
     public:
         Gun();
         ~Gun();
         void useGun(shooter::type shooter);
-        void throwGun();
         void update(Vector2 position);
         void draw();
         void fire();

@@ -43,6 +43,7 @@ Game::Game(int width, int height) {
 
     // Init player
     this->player.setName();
+    this->player.useGun();
 
     // Init enemies
     for (int i = 0; i < NB_ENEMIES; i++) {
@@ -53,6 +54,8 @@ Game::Game(int width, int height) {
 
     // Load textures
     this->loadTextures();
+
+    HideCursor();
 
 }
 
@@ -138,6 +141,16 @@ void Game::render() {
     EndDrawing();
 }
 
+void Game::drawTarget() {
+    Vector2 mouse = GetScreenToWorld2D(GetMousePosition(), Game::getInstance()->getCamera());
+    float scale = 1.4f;
+    
+    mouse.x -= (this->target.width * scale) / 2;
+    mouse.y -= (this->target.height * scale) / 2;
+
+    DrawTextureEx(this->target, mouse, 0.0f, scale, BLACK);
+}
+
 void Game::draw() {
     BeginMode2D(this->fixedCamera);
         this->player.drawStats();
@@ -166,6 +179,8 @@ void Game::draw() {
             this->alertMessage.active   = (this->alertMessage.time != 0);
         }
 
+        // Draw our custom cursor
+        this->drawTarget();
     EndMode2D();
 }
 
@@ -219,4 +234,7 @@ void Game::loadTextures() {
             this->enemies[i].loadTextures();
         }
     } 
+
+    std::string targetPath = "assets/items/target.png";
+    this->target = LoadTexture(targetPath.c_str());
 }

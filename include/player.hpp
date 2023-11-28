@@ -58,6 +58,7 @@ class Player : public Sprite {
         void update();
         void updateFrames();
         Vector2 getPosition();
+        void useGun();
         void kill(); // When the player kills an enemy 
         void loadTextures();
         stats getStats();
