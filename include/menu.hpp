@@ -7,46 +7,31 @@
 
 using namespace utils;
 
-namespace menuState {
-    enum state {
-        Welcome        = 0,
-        LevelSelection = 1,
-        GameOver       = 2
-    };
-};
-
-namespace menuTextures {
-    enum state {
-        Welcome        = 0,
-        LevelSelection = 1,
-        GameOver       = 2
-    };
-};
-
-
 class Menu {
     private:
-        std::vector<Texture2D> texturesWelcome;
+        std::vector<Texture2D> texturesStart;
         std::vector<Texture2D> texturesLevelSelection;
         std::vector<Texture2D> texturesGameOver;
+        std::vector<Texture2D> texturesPlaying;
 
-        menuState::state state;
+        utils::state state;
+        
+        void drawStart();
+        void drawLevels();
+        void drawGameOver();
+        void drawPlaying();
 
+        void updateStart();
+        void updateLevels();
+        void updateGameOver();
+        void updatePlaying();
     public:
         Menu();
         ~Menu();
-
-        void drawWelcome();
-        void drawLevels();
-        void drawGameOver();
         void draw();
-
         void update();
-        void updateWelcome();
-        void updateLevels();
-        void updateGameOver();
-
         void loadTexture();
+        utils::state getState();
 };
 
 #endif // MENU_HPP

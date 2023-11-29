@@ -1,4 +1,3 @@
-#include "../include/player.hpp"
 #include "../include/game.hpp"
 
 Player::Player() {
