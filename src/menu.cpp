@@ -11,10 +11,8 @@ void Menu::drawStart() {
 
 
     /* Title */
-    Texture2D titleTexture = LoadTexture("assets/menu/title.png");
     Vector2 title          = { GetScreenWidth() / 2.0f, GetScreenHeight() * 0.2f };
-    float titleScale       = 0.2f;
-    DrawTextureEx(titleTexture, { title.x - (titleTexture.width * titleScale)/2.0f, title.y - (titleTexture.height * titleScale)/2.0f }, 0.0f, titleScale, WHITE);
+    DrawTextEx(GetFontDefault(), "Keto Fighting" , title , 20.0f , 5.0f , BLACK);
 
     /* play */
     Texture2D playTexture = LoadTexture("assets/menu/play.png");
@@ -23,19 +21,20 @@ void Menu::drawStart() {
     DrawTextureEx(playTexture, { play.x - (playTexture.width * playScale)/2.0f, play.y - (playTexture.height * playScale)/2.0f }, 0.0f, playScale, WHITE);
 
 
-
 }
 
 void Menu::drawLevels() {}
 
 void Menu::drawGameOver() {
 
-    Vector2 gameOver          = { GetScreenWidth() / 2.0f, GetScreenHeight() * 0.3f };
-    DrawTextEx(GetFontDefault(), "Game Over (nul)" , gameOver , 20.0f , 5.0f , BLACK);
+    Vector2 gameOver = { GetScreenWidth() / 2.0f, GetScreenHeight() * 0.3f };
+    DrawTextEx(GetFontDefault(), "Game Over" , gameOver , 20.0f , 5.0f , BLACK);
 
     /* retry */
+    Texture2D retryTexture = LoadTexture("assets/menu/icons/retry.png");
     Vector2 retry          = { GetScreenWidth() * 0.45f, GetScreenHeight() * 0.6f };
-    DrawTextEx(GetFontDefault(), "Play" , retry , 20.0f , 5.0f , BLACK);
+    float retryScale       = 0.15f;
+    DrawTextureEx(retryTexture, { retry.x - (retryTexture.width * retryScale)/2.0f, retry.y - (retryTexture.height * retryScale)/2.0f }, 0.0f, retryScale, WHITE);
 
     /* levels */
     Texture2D levelsTexture = LoadTexture("assets/menu/icons/levels.png");
@@ -49,7 +48,7 @@ void Menu::drawPlaying() {
 }
 
 void Menu::updateStart() {
-    Vector2 mouse         = GetMousePosition();
+    Vector2 mouse  = GetMousePosition();
     
     Rectangle playButton  = { GetScreenWidth() / 2.0f, GetScreenHeight() / 2.0f, 200, 100 };
     playButton.x -= playButton.width / 2;
@@ -61,8 +60,22 @@ void Menu::updateStart() {
 
 }
 
-void Menu::updateLevels() {}
-void Menu::updateGameOver() {}
+void Menu::updateLevels() {
+    if(this->state == GameOver){
+
+        Vector2 mouse  = GetMousePosition();
+        Rectangle levelButtons  = { GetScreenWidth() / 2.0f, GetScreenHeight() / 2.0f, 100, 100 };
+        levelButtons.x -= levelButtons.width / 2;
+        levelButtons.y -= levelButtons.height / 2;
+
+        if(IsMouseButtonPressed(MOUSE_BUTTON_LEFT) && CheckCollisionPointRec(mouse, levelButtons)) {
+            this->state = LevelSelection;
+    }
+  }
+}
+void Menu::updateGameOver() {
+
+}
 void Menu::updatePlaying() {}
 
 void Menu::draw() {
