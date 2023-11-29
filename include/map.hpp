@@ -14,10 +14,12 @@ class Map {
         /* Map */
         std::vector<std::vector<int>> map;
         std::vector<std::vector<Tile>> tilesMap;
+        Tile checkPoint;
         std::vector<Tile> obstacles;
         std::vector<Tile> powerUps;
         std::vector<CustomTexture> textures;
 
+        std::string mapPath;
         int mapWidth;
         int mapHeight;
         
@@ -34,6 +36,7 @@ class Map {
         Map();
         ~Map();
         std::vector<Tile>& getPowerUps();
+        Tile getCheckPoint();
         std::vector<Tile>& getObstacles();
         void load(std::string filepath);
         void drawPowerUps();
@@ -43,6 +46,7 @@ class Map {
         int getWidth();
         int getHeight();
         void loadTextures();
+        void reset();
 };
 
 

@@ -27,6 +27,7 @@ constexpr int   MAX_BULLETS      =   99;
 constexpr float BULLET_VELOCITY  =   8.0f;
 constexpr int   NB_ENEMIES       =   1;
 constexpr int   MAX_HEALTH       =   10;
+constexpr int   MAX_LEVELS       =   3;
 //  END DEFINES
 
 
@@ -74,13 +75,14 @@ namespace utils {
         PowerUp_Coin     = 3,
         PowerUp_Heart    = 4,
         PowerUp_MedKit   = 5,
-        PowerUp_LuckyBox = 6
+        PowerUp_LuckyBox = 6,
+        CheckPoint = 7,
     };
 
     struct Tile {
         Texture2D texture;
         Vector2 pos;
-        utils::TileType type;
+        TileType type;
         Rectangle frames;
         int currentFrame;
     };
@@ -98,17 +100,17 @@ namespace utils {
     /*
     *   Finds in which index `id` is, -1 otherwise
     */
-    int findIndexById(int id, std::vector<utils::CustomTexture> textureVect);
+    int findIndexById(int id, std::vector<CustomTexture> textureVect);
 
     /*
     *   Get value in map
     */
-    utils::TileType getTileTypeByCode(int code);
+    TileType getTileTypeByCode(int code);
 
     /*
-    *   Check if tile is a poweruP
+    *   Check if tile is a powerUp
     */
-    bool isPowerUp(utils::TileType type);
+    bool isPowerUp(TileType type);
 }
 
 #endif // UTILS_HPP

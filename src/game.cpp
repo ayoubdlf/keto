@@ -22,11 +22,11 @@ Game::Game(int width, int height) {
     // Setting alerts to false
     this->alertMessage.active = false;
 
-    // Init level
-    this->level = 1;
+    // Init levels
+    this->levels.create();
 
     // Init map
-    this->map.load("assets/map/map.txt");
+    this->map.load(this->levels.getCurrentLevelPath());
     
     // Init main camera
     this->camera.target   = { width/2.0f, height/2.0f };
@@ -103,6 +103,10 @@ Player& Game::getPlayer() {
     return this->player;
 }
 
+Levels& Game::getLevels() {
+    return this->levels;
+}
+
 void Game::alert(std::string message) {
     this->alertMessage.message  = message;
     this->alertMessage.position = { this->player.getPosition().x, this->player.getPosition().y - this->player.getRect().height * 0.2f };
@@ -151,11 +155,19 @@ void Game::drawTarget() {
     DrawTextureEx(this->target, mouse, 0.0f, scale, BLACK);
 }
 
+void Game::drawLevelNumber() {
+    std::string level  = std::to_string(this->levels.getCurrentLevel());
+    Vector2 screenSize = GetScreenToWorld2D({ (float)GetScreenWidth(), (float)GetScreenHeight() }, this->fixedCamera);
+    int fontSize       = 30.0f;
+    DrawTextEx(GetFontDefault(), level.c_str(), { screenSize.x/2.0f - MeasureText(level.c_str(), fontSize), 20.0f }, fontSize, 1.0f, BLACK);
+}
+
 void Game::draw() {
     BeginMode2D(this->fixedCamera);
         this->player.drawStats();
+        this->drawLevelNumber();    
     EndMode2D();
-    
+
     BeginMode2D(this->camera);
         
         this->map.draw();
@@ -191,7 +203,23 @@ void Game::load() {
         json data;
         file >> data;
 
-        this->level = data["level"].get<int>();
+        if(this->levels.getCurrentLevel() != data["level"].get<int>()) {
+            this->levels.load(data["level"].get<int>());
+            
+            this->map.reset();
+            this->player.reset();
+            this->enemies.clear();
+            this->enemies.shrink_to_fit();
+
+            this->map.load(this->levels.getCurrentLevelPath());
+            this->player.setName();
+            this->player.useGun();
+
+            this->loadTextures();
+        } else {
+            this->levels.load(data["level"].get<int>());
+        }
+
         this->player.loadData(data);
     }
 
@@ -202,7 +230,7 @@ void Game::save() {
 
     json data = {
         /* Game */
-        { "level"   , this->level },
+        { "level"   , this->levels.getCurrentLevel() },
         /* Player */
         { "name"    , this->player.getName() },
         { "hp"      , this->player.getStats().health },
@@ -223,6 +251,21 @@ void Game::save() {
 
     file.close();
 
+}
+
+void Game::nextLevel() {
+    this->levels.nextLevel();
+
+    this->map.reset();
+    this->player.reset();
+    this->enemies.clear();
+    this->enemies.shrink_to_fit();
+
+    this->map.load(this->levels.getCurrentLevelPath());
+    this->player.setName();
+    this->player.useGun();
+
+    this->loadTextures();
 }
 
 void Game::loadTextures() {

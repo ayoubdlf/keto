@@ -63,6 +63,7 @@ class Player : public Sprite {
         void loadTextures();
         stats getStats();
         void loadData(json data);
+        void reset();
 };
 
 

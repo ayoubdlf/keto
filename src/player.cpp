@@ -1,3 +1,4 @@
+#include "../include/player.hpp"
 #include "../include/game.hpp"
 
 Player::Player() {
@@ -185,13 +186,22 @@ void Player::handleCollisions() {
         }
         
     }
+    
+    Rectangle player = {this->position.x, this->position.y - this->velocity.y, this->width, this->height};
+    Tile checkPoint = Game::getInstance()->getMap().getCheckPoint();
+    Rectangle checkPointRect = {checkPoint.pos.x, checkPoint.pos.y, (float)checkPoint.frames.width, (float)checkPoint.frames.height};
+
+    // COLLISION WITH THE CHECKPOINT
+    if (CheckCollisionRecs(player, checkPointRect)) {
+        Game::getInstance()->nextLevel();
+        return;
+    }
 
     // POWER UPS COLLISION
     std::vector<Tile> powerUps = Game::getInstance()->getMap().getPowerUps();
 
     for (int i = 0; i < (int)powerUps.size(); i++) {
         Rectangle powerUp   = {powerUps[i].pos.x, powerUps[i].pos.y, (float)powerUps[i].frames.width, (float)powerUps[i].frames.height};
-        Rectangle player = {this->position.x, this->position.y - this->velocity.y, this->width, this->height};
         
         if (CheckCollisionRecs(player, powerUp)) {
             std::random_device rd;
@@ -210,8 +220,7 @@ void Player::handleCollisions() {
                         case PowerUp_Heart    : this->heal(5)         ; Game::getInstance()->alert("+5 hearts")  ; break;
                         case PowerUp_MedKit   : this->heal(MAX_HEALTH); Game::getInstance()->alert("FULL HEALTH"); break;
                         default: break;
-                    }
-                
+                    }            
                 default: break;
             }
             
@@ -293,4 +302,9 @@ void Player::loadTextures() {
         this->numbersTexture[i] = LoadTexture(number_path.c_str()); 
     }
     
+}
+
+void Player::reset() {
+    this->~Player();
+    new (this) Player();
 }

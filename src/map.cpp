@@ -58,6 +58,10 @@ std::vector<Tile>& Map::getPowerUps() {
     return this->powerUps;
 }
 
+Tile Map::getCheckPoint() {
+    return this->checkPoint;
+}
+
 void Map::loadTiles() {
     this->tilesMap.resize(this->map.size(), std::vector<Tile>(this->map[0].size()));
 
@@ -86,6 +90,10 @@ void Map::loadTiles() {
                     this->tilesMap[i][j].currentFrame = 0;
 
                     this->powerUps.push_back(this->tilesMap[i][j]);
+                }
+
+                if(this->tilesMap[i][j].type == CheckPoint) {
+                    this->checkPoint = this->tilesMap[i][j];
                 }
 
                 if(this->tilesMap[i][j].type == Obstacle) {
@@ -117,7 +125,7 @@ void Map::loadTextures() {
     this->textures.resize(tilesNumber.size());
 
     for(int i = 0; i < (int)tilesNumber.size(); i++) {
-        std::string tilePath = "assets/map/tiles/" +std::to_string(tilesNumber[i]) + ".png";
+        std::string tilePath = this->mapPath + "tiles/" +std::to_string(tilesNumber[i]) + ".png";
        
         if(tilesNumber[i] >= 1 && tilesNumber[i] <= 5) {
             std::string customTilePath;
@@ -146,6 +154,7 @@ void Map::loadTextures() {
 }
 
 void Map::load(std::string filepath) {
+    this->mapPath = filepath.substr(0, filepath.find_last_of('/')) + "/";
     std::ifstream file (filepath);
     std::string line;
 
@@ -182,4 +191,9 @@ int Map::getWidth() {
 
 int Map::getHeight() {
     return this->mapHeight;
+}
+
+void Map::reset() {
+    this->~Map();
+    new (this) Map();
 }

@@ -25,6 +25,7 @@ class Enemy : public Sprite {
         void setPosition(Vector2 position);
         void loadTextures();
         Vector2 getPosition();
+        void reset();
 };
 
 #endif // ENEMY_HPP

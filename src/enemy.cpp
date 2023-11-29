@@ -154,3 +154,8 @@ void Enemy::loadTextures() {
     this->textures[Idle]    = loadCustomTexture(idle);
     this->textures[Run]     = loadCustomTexture(run);
 }
+
+void Enemy::reset() {
+    this->~Enemy();
+    new (this) Enemy();
+}
