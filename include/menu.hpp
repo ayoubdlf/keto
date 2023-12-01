@@ -28,13 +28,16 @@ class Menu {
         std::array<texture, 5> textures;
 
         utils::state state;
+        int counter;
         
         void drawStart();
+        void drawCompleted();
         void drawLevels();
         void drawGameOver();
         void drawPlaying();
 
         void updateStart();
+        void updateCompleted();
         void updateLevels();
         void updateGameOver();
         void updatePlaying();
@@ -45,6 +48,7 @@ class Menu {
         void update();
         void loadTextures();
         utils::state getState();
+        void setState(utils::state state);
 };
 
 #endif // MENU_HPP

@@ -118,10 +118,6 @@ Camera2D Game::getFixedCamera() {
     return this->fixedCamera;
 }
 
-state Game::getState() {
-    return this->menu.getState();
-}
-
 Map& Game::getMap() {
     return this->map;
 }
@@ -132,6 +128,10 @@ Player& Game::getPlayer() {
 
 Levels& Game::getLevels() {
     return this->levels;
+}
+
+Menu& Game::getMenu() {
+    return this->menu;
 }
 
 void Game::alert(std::string message) {
@@ -164,6 +164,8 @@ void Game::update() {
                     this->enemies.erase(this->enemies.begin() + i);
                 }
             }
+        } else {
+            Game::getInstance()->getMenu().setState(GameOver);
         }
         
     }
@@ -250,6 +252,8 @@ void Game::load() {
 
         this->reset(false);
         this->player.loadData(data);
+    } else {
+        Game::getInstance()->reset();
     }
 
     file.close();

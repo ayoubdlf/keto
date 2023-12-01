@@ -2,7 +2,8 @@
 #include "../include/game.hpp"
 
 Menu::Menu() {
-    this->state  = Start;
+    this->state   = Start;
+    this->counter = 0;
 
     this->textures[menu::Play].scale = 2.0f;
     this->textures[menu::Load].scale = 2.0f;
@@ -50,10 +51,27 @@ void Menu::drawStart() {
     DrawTextureEx(this->textures[menu::Exit].texture, this->textures[menu::Exit].position, 0.0f, this->textures[menu::Exit].scale, WHITE);
 }
 
+void Menu::drawCompleted() {
+    Vector2 window = GetScreenToWorld2D({ (float)GetScreenWidth(), (float)GetScreenHeight() }, Game::getInstance()->getFixedCamera());
+
+    int fontSize     = 20.0f;
+    int middle_text1 = MeasureText("Congratulations!", fontSize) / 2;
+    int middle_text2 = MeasureText("You completed the game", fontSize) / 2;
+    Vector2 text1    = { (window.x / 2.0f) - middle_text1, window.y * 0.3f };
+    Vector2 text2    = { (window.x / 2.0f) - middle_text2, text1.y + fontSize };
+    DrawTextEx(Game::getInstance()->getFont(), "Congratulations!", text1, fontSize, 1.0f, BLACK);
+    DrawTextEx(Game::getInstance()->getFont(), "You completed the game", text2, fontSize, 1.0f, BLACK);
+}
+
 void Menu::drawLevels() {}
 
 void Menu::drawGameOver() {
-    // DrawTextEx(Game::getInstance()->getFont(), "Game Over" , { window.x/2.0f, window.y/2.0f }, 20.0f , 5.0f , BLACK);
+    Vector2 window = GetScreenToWorld2D({ (float)GetScreenWidth(), (float)GetScreenHeight() }, Game::getInstance()->getFixedCamera());
+
+    int fontSize = 20.0f;
+    int middle   = MeasureText("Game Over", fontSize) / 2;
+    Vector2 text = { (window.x / 2.0f) - middle, window.y * 0.3f };
+    DrawTextEx(Game::getInstance()->getFont(), "Game Over", text, fontSize, 1.0f, BLACK);
 }
 
 void Menu::drawPlaying() {
@@ -112,14 +130,32 @@ void Menu::updateStart() {
 
 }
 
+void Menu::updateCompleted() {
+    this->counter += 1;
+
+    if(this->counter == 180) {
+        this->state = Start;
+        this->counter = 0;
+    }
+}
+
 void Menu::updateLevels() {}
-void Menu::updateGameOver() {}
 void Menu::updatePlaying() {}
+
+void Menu::updateGameOver() {
+    this->counter += 1;
+
+    if(this->counter == 180) {
+        this->state = Start;
+        this->counter = 0;
+    }
+}
 
 void Menu::draw() {
     switch (this->state) {
-        case Start          : this->drawStart() ; break;
-        case LevelSelection : this->drawLevels()  ; break;
+        case Start          : this->drawStart(); break;
+        case Completed      : this->drawCompleted(); break;
+        case LevelSelection : this->drawLevels(); break;
         case GameOver       : this->drawGameOver(); break;
         case Playing        : this->drawPlaying(); break;
         default: break;
@@ -129,6 +165,7 @@ void Menu::draw() {
 void Menu::update() {
     switch (this->state) {
         case Start          : this->updateStart() ; break;
+        case Completed      : this->updateCompleted() ; break;
         case LevelSelection : this->updateLevels()  ; break;
         case GameOver       : this->updateGameOver(); break;
         case Playing        : this->updatePlaying(); break;
@@ -149,6 +186,10 @@ void Menu::loadTextures() {
     // TODO: this->textures[menu::Levels].texture
 }
 
-state Menu::getState() {
+utils::state Menu::getState() {
     return this->state;
+}
+
+void Menu::setState(utils::state state) {
+    this->state = state;
 }

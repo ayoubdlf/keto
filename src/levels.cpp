@@ -90,3 +90,7 @@ int Levels::getCurrentLevel(Level* level) {
 
     return level->level;
 }
+
+bool Levels::isLastLevel() {
+    return this->getCurrentLevel() == MAX_LEVELS;
+}

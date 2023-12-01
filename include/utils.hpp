@@ -27,9 +27,8 @@ constexpr int   MAX_BULLETS      =   99;
 constexpr float BULLET_VELOCITY  =   8.0f;
 constexpr int   NB_ENEMIES       =   1;
 constexpr int   MAX_HEALTH       =   10;
-constexpr int   MAX_LEVELS       =   3;
+constexpr int   MAX_LEVELS       =   2;
 //  END DEFINES
-
 
 namespace utils {
 
@@ -38,7 +37,8 @@ namespace utils {
         LevelSelection = 1,
         GameOver       = 2,
         Playing        = 3,
-        Exit           = 4
+        Completed      = 4,
+        Exit           = 5
     };
 
     struct AlertMessage {

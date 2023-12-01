@@ -46,7 +46,6 @@ class Game {
         void load();
         void save();
         void nextLevel();
-        state getState();
 
         void alert(std::string message);
         Camera2D getCamera();
@@ -54,6 +53,7 @@ class Game {
         Map& getMap();
         Player& getPlayer();
         Levels& getLevels();
+        Menu& getMenu();
         std::vector<Enemy>& getEnemies();
         Font& getFont();
         

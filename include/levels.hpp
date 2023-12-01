@@ -24,6 +24,7 @@ class Levels {
         void nextLevel(Level* level = nullptr);
         std::string getCurrentLevelPath(Level* level = nullptr);
         int getCurrentLevel(Level* level = nullptr);
+        bool isLastLevel();
 };
 
 
