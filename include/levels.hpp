@@ -20,7 +20,7 @@ class Levels {
         Levels();
         ~Levels();
         void create();
-        void load(int lastLevel);
+        void load();
         void nextLevel(Level* level = nullptr);
         std::string getCurrentLevelPath(Level* level = nullptr);
         int getCurrentLevel(Level* level = nullptr);

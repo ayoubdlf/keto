@@ -9,6 +9,7 @@
 #include "map.hpp"
 #include "bullet.hpp"
 #include "levels.hpp"
+#include "menu.hpp"
 
 class Game {
     private:
@@ -16,6 +17,9 @@ class Game {
         std::vector<Enemy> enemies;
         Levels levels;
         Map map;
+        Menu menu;
+
+        Font font;
 
         Texture2D target; // custom cursor
         Camera2D camera;
@@ -35,19 +39,23 @@ class Game {
         Game(int width, int height);
         ~Game();
         void init();
+        void reset(bool resetLevels = true);
         void input();
         void update();
         void render();
         void load();
         void save();
         void nextLevel();
+        state getState();
 
         void alert(std::string message);
         Camera2D getCamera();
+        Camera2D getFixedCamera();
         Map& getMap();
         Player& getPlayer();
         Levels& getLevels();
         std::vector<Enemy>& getEnemies();
+        Font& getFont();
         
 };
 

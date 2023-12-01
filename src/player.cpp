@@ -131,9 +131,11 @@ void Player::handleInputs() {
     if(IsKeyDown(KEY_LEFT))                   { this->velocity.x = -X_VELOCITY * DELTA * SCALE; this->action = Run;  this->direction = Left;  }
     if(IsKeyDown(KEY_UP) && !this->isJumping) { this->velocity.y = -Y_VELOCITY * DELTA * SCALE; this->action = Jump; this->isJumping = true; this->framesSpeed = Y_FRAME_SPEED; }
 
-    // TODO: remove this
-    if(IsKeyPressed(KEY_L))    { Game::getInstance()->load(); }
-    if(IsKeyDown(KEY_LEFT_CONTROL) && IsKeyPressed(KEY_S))    { Game::getInstance()->save(); }
+    // TODO: add save icon tho'
+    if(IsKeyDown(KEY_LEFT_CONTROL) && IsKeyPressed(KEY_S)) {
+        Game::getInstance()->save();
+        Game::getInstance()->alert("SAVED");
+    }
 
     if(IsMouseButtonPressed(MOUSE_BUTTON_LEFT)) { this->gun.fire(); }
     
@@ -144,9 +146,10 @@ Vector2 Player::getPosition() {
 }
 
 void Player::handleCollisions() {
+    Rectangle playerX = {this->position.x, this->position.y - this->velocity.y, this->width, this->height};
+    Rectangle playerY = {this->position.x, this->position.y, this->width, this->height};
     
     // PLAYER OUTSIDE MAP
-    // if((this->position.x + this->width) < 0 || this->position.x > Game::getInstance()->getMap().getWidth() || (this->position.y + this->height) < 0 || this->position.y > Game::getInstance()->getMap().getHeight())
     if(this->position.y - this->height * 6 > Game::getInstance()->getMap().getHeight()) {
         this->health = 0;
     }
@@ -154,9 +157,8 @@ void Player::handleCollisions() {
     // X AXIS COLLISIONS
     for(Tile obstacle : Game::getInstance()->getMap().getObstacles()) {
         Rectangle tile   = {obstacle.pos.x, obstacle.pos.y, (float)obstacle.texture.width, (float)obstacle.texture.height};
-        Rectangle player = {this->position.x, this->position.y - this->velocity.y, this->width, this->height};
         
-        if (CheckCollisionRecs(player, tile)) {
+        if (CheckCollisionRecs(playerX, tile)) {
             this->velocity.x = 0;
             this->position.x = (this->position.x > tile.x) ? tile.x + this->width : tile.x - this->width;
             break;
@@ -167,9 +169,8 @@ void Player::handleCollisions() {
     // Y AXIS COLLISIONS
     for(Tile obstacle : Game::getInstance()->getMap().getObstacles()) {
         Rectangle tile   = {obstacle.pos.x, obstacle.pos.y, (float)obstacle.texture.width, (float)obstacle.texture.height};
-        Rectangle player = {this->position.x, this->position.y, this->width, this->height};
         
-        if (CheckCollisionRecs(player, tile)) {
+        if (CheckCollisionRecs(playerY, tile)) {
             // Head (collisions with the player head)
             if (this->velocity.y < 0) {
                 this->velocity.y = 0;
@@ -187,12 +188,11 @@ void Player::handleCollisions() {
         
     }
     
-    Rectangle player = {this->position.x, this->position.y - this->velocity.y, this->width, this->height};
-    Tile checkPoint = Game::getInstance()->getMap().getCheckPoint();
-    Rectangle checkPointRect = {checkPoint.pos.x, checkPoint.pos.y, (float)checkPoint.frames.width, (float)checkPoint.frames.height};
+    Tile checkPoint          = Game::getInstance()->getMap().getCheckPoint();
+    Rectangle checkPointRect = {checkPoint.pos.x, checkPoint.pos.y, (float)checkPoint.texture.width, (float)checkPoint.texture.height};
 
     // COLLISION WITH THE CHECKPOINT
-    if (CheckCollisionRecs(player, checkPointRect)) {
+    if (CheckCollisionRecs(playerX, checkPointRect) || CheckCollisionRecs(playerY, checkPointRect)) {
         Game::getInstance()->nextLevel();
         return;
     }
@@ -203,7 +203,7 @@ void Player::handleCollisions() {
     for (int i = 0; i < (int)powerUps.size(); i++) {
         Rectangle powerUp   = {powerUps[i].pos.x, powerUps[i].pos.y, (float)powerUps[i].frames.width, (float)powerUps[i].frames.height};
         
-        if (CheckCollisionRecs(player, powerUp)) {
+        if (CheckCollisionRecs(playerX, powerUp) || CheckCollisionRecs(playerY, powerUp)) {
             std::random_device rd;
             std::mt19937 mt(rd());
             std::uniform_int_distribution<int> dist(PowerUp_Bullet, PowerUp_MedKit); // [2-5]

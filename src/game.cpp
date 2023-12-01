@@ -17,46 +17,33 @@ Game::Game(int width, int height) {
 
     InitWindow(width, height, "Keto");
     SetTargetFPS(60);
-    SetTextureFilter(GetFontDefault().texture, TEXTURE_FILTER_POINT);
+    this->font  = LoadFontEx("assets/fonts/SF-Compact/SF-Compact-Text-Semibold.otf", 100, NULL, 0);
+    // this->font  = LoadFontEx("assets/fonts/SF-Pro/SF-Pro-Text-Semibold.otf", 100, NULL, 0);
+    SetTextureFilter(this->font.texture, TEXTURE_FILTER_POINT);
 
-    // Setting alerts to false
+    /* Setting alerts to false */
     this->alertMessage.active = false;
-
-    // Init levels
-    this->levels.create();
-
-    // Init map
-    this->map.load(this->levels.getCurrentLevelPath());
     
-    // Init main camera
+    /* Init main camera */
     this->camera.target   = { width/2.0f, height/2.0f };
     this->camera.offset   = { width/2.0f, height/2.0f };
     this->camera.zoom     = ZOOM;
     this->camera.rotation = 0.0f;
 
-    // Init foreground camera (player stats, menu)
+    /* Init foreground camera (player stats, menu) */
     this->fixedCamera.target   = { 0 };
     this->fixedCamera.offset   = { 0 };
     this->fixedCamera.zoom     = ZOOM;
     this->fixedCamera.rotation = 0.0f;
 
+    /* Menu textures */
+    this->menu.loadTextures();
 
-    // Init player
-    this->player.setName();
-    this->player.useGun();
-
-    // Init enemies
-    for (int i = 0; i < NB_ENEMIES; i++) {
-        this->enemies.emplace_back();
-        this->enemies[i].setName("keti");
-        this->enemies[i].setPosition({ 256.0f, 10.0f });
-    }
-
-    // Load textures
-    this->loadTextures();
+    /* Cursor textures */
+    std::string targetPath = "assets/items/target.png";
+    this->target = LoadTexture(targetPath.c_str());
 
     HideCursor();
-
 }
 
 Game::~Game() {}
@@ -66,6 +53,38 @@ void Game::init() {
         Calling this function before the game loop,
         will allow us to initialize out instance of the game singleton.
     */
+}
+
+void Game::reset(bool resetLevels) {
+
+    if(resetLevels) {
+        /* Create Levels */
+        this->levels.create();
+    }
+
+    /* Reset all sprites and map */
+    this->map.reset();
+    this->player.reset();
+    this->enemies.clear();
+    this->enemies.shrink_to_fit();
+
+    /* load map */
+    this->map.load(this->levels.getCurrentLevelPath());
+
+    /* Init player */
+    this->player.setName();
+    this->player.useGun();
+    this->player.loadTextures();
+
+    /* Init player */
+    for (int i = 0; i < NB_ENEMIES; i++) {
+        this->enemies.emplace_back();
+        this->enemies[i].setName("keti");
+        this->enemies[i].setPosition({ 256.0f, 10.0f });
+    }
+
+    /* Load textures */
+    this->loadTextures();
 }
 
 void Game::input() {
@@ -95,6 +114,14 @@ Camera2D Game::getCamera() {
     return this->camera;
 }
 
+Camera2D Game::getFixedCamera() {
+    return this->fixedCamera;
+}
+
+state Game::getState() {
+    return this->menu.getState();
+}
+
 Map& Game::getMap() {
     return this->map;
 }
@@ -119,20 +146,26 @@ std::vector<Enemy>& Game::getEnemies() {
 }
 
 void Game::update() {
-    this->updateCamera();
-    this->map.update();
+    this->menu.update();
 
-    if(this->player.isAlive()) {
-        this->player.update();
+    if(this->menu.getState() == Playing) {
 
-        for (int i = 0; i < (int)this->enemies.size(); i++) {
-            if(this->enemies[i].isAlive()) {
-                this->enemies[i].update();
-            } else {
-                // Deleting the killed enemy from the vector
-                this->enemies.erase(this->enemies.begin() + i);
+        this->updateCamera();
+        this->map.update();
+
+        if(this->player.isAlive()) {
+            this->player.update();
+
+            for (int i = 0; i < (int)this->enemies.size(); i++) {
+                if(this->enemies[i].isAlive()) {
+                    this->enemies[i].update();
+                } else {
+                    // Deleting the killed enemy from the vector
+                    this->enemies.erase(this->enemies.begin() + i);
+                }
             }
         }
+        
     }
 }
 
@@ -159,67 +192,63 @@ void Game::drawLevelNumber() {
     std::string level  = std::to_string(this->levels.getCurrentLevel());
     Vector2 screenSize = GetScreenToWorld2D({ (float)GetScreenWidth(), (float)GetScreenHeight() }, this->fixedCamera);
     int fontSize       = 30.0f;
-    DrawTextEx(GetFontDefault(), level.c_str(), { screenSize.x/2.0f - MeasureText(level.c_str(), fontSize), 20.0f }, fontSize, 1.0f, BLACK);
+    DrawTextEx(this->font, level.c_str(), { screenSize.x/2.0f - MeasureText(level.c_str(), fontSize), 20.0f }, fontSize, 1.0f, BLACK);
 }
 
 void Game::draw() {
     BeginMode2D(this->fixedCamera);
-        this->player.drawStats();
-        this->drawLevelNumber();    
+        if(this->menu.getState() == Playing) {
+            this->player.drawStats();
+            this->drawLevelNumber();
+        }
+
+        this->menu.draw();
+
     EndMode2D();
 
     BeginMode2D(this->camera);
-        
-        this->map.draw();
+        if(this->menu.getState() == Playing) {
 
-        for (int i = 0; i < (int)this->enemies.size(); i++) {
-            if(this->enemies[i].isAlive()) {
-                this->enemies[i].draw();
+            this->map.draw();
+
+            for (int i = 0; i < (int)this->enemies.size(); i++) {
+                if(this->enemies[i].isAlive()) {
+                    this->enemies[i].draw();
+                }
             }
-        }
 
-        if(this->player.isAlive()) {
-            this->player.draw();
-        }
+            if(this->player.isAlive()) {
+                this->player.draw();
+            }
 
-        // Show the alert message right on top of the player
-        if(this->alertMessage.active) {
-            int textMiddle = (MeasureText(this->alertMessage.message.c_str(), 10.0f))/2;
-            DrawTextEx(GetFontDefault(), this->alertMessage.message.c_str(), this->alertMessage.position, 10.0f, 1.0f, BLACK);
-            this->alertMessage.position = { this->player.getRect().x + this->player.getRect().width/2 - textMiddle, this->alertMessage.position.y - 0.5f };
-            this->alertMessage.time    -= 1;
-            this->alertMessage.active   = (this->alertMessage.time != 0);
+            // Show the alert message right on top of the player
+            if(this->alertMessage.active) {
+                int textMiddle = MeasureText(this->alertMessage.message.c_str(), 10.0f) / 2;
+                DrawTextEx(this->font, this->alertMessage.message.c_str(), this->alertMessage.position, 10.0f, 1.0f, BLACK);
+                this->alertMessage.position = { this->player.getRect().x + this->player.getRect().width/2 - textMiddle, this->alertMessage.position.y - 0.5f };
+                this->alertMessage.time    -= 1;
+                this->alertMessage.active   = (this->alertMessage.time != 0);
+            }
+
         }
 
         // Draw our custom cursor
         this->drawTarget();
+
     EndMode2D();
 }
 
 void Game::load() {
+
+    this->levels.load();
+
     std::ifstream file("data.json");
     
     if (file.is_open()) {
         json data;
         file >> data;
 
-        if(this->levels.getCurrentLevel() != data["level"].get<int>()) {
-            this->levels.load(data["level"].get<int>());
-            
-            this->map.reset();
-            this->player.reset();
-            this->enemies.clear();
-            this->enemies.shrink_to_fit();
-
-            this->map.load(this->levels.getCurrentLevelPath());
-            this->player.setName();
-            this->player.useGun();
-
-            this->loadTextures();
-        } else {
-            this->levels.load(data["level"].get<int>());
-        }
-
+        this->reset(false);
         this->player.loadData(data);
     }
 
@@ -276,8 +305,9 @@ void Game::loadTextures() {
         if(this->enemies[i].isAlive()) {
             this->enemies[i].loadTextures();
         }
-    } 
+    }
+}
 
-    std::string targetPath = "assets/items/target.png";
-    this->target = LoadTexture(targetPath.c_str());
+Font& Game::getFont() {
+    return this->font;
 }

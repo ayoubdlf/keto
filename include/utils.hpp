@@ -34,10 +34,11 @@ constexpr int   MAX_LEVELS       =   3;
 namespace utils {
 
     enum state {
-        Start = 0,
+        Start          = 0,
         LevelSelection = 1,
-        GameOver = 2,
-        Playing = 3
+        GameOver       = 2,
+        Playing        = 3,
+        Exit           = 4
     };
 
     struct AlertMessage {

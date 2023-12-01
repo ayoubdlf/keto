@@ -28,11 +28,22 @@ void Levels::create() {
 }
 
 /*
-*   Load levels that have akready been created (data.json)
-*  `lastLevel` is the last known completed level, 1 if none
+*   Load levels from a file (data.json)
 */
-void Levels::load(int lastLevel) {
-    this->levels = this->createLevels(1, lastLevel);
+void Levels::load() {
+    std::ifstream file("data.json");
+
+    if (file.is_open()) {
+        json data;
+        file >> data;
+
+        // Create levels from 1 to the last saved level inside the data.json
+        this->levels = this->createLevels(1, data["level"].get<int>());
+
+    }
+
+    file.close();
+
 }
 
 /*

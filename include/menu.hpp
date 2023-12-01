@@ -7,12 +7,25 @@
 
 using namespace utils;
 
+namespace menu {
+    enum textures {
+        Start = 0,
+        Play  = 1,
+        Load  = 2,
+        Retry = 3,
+        Exit  = 4
+    };
+}
+
+struct texture {
+    Texture2D texture;
+    float scale;
+    Vector2 position;
+};
+
 class Menu {
     private:
-        std::vector<Texture2D> texturesStart;
-        std::vector<Texture2D> texturesLevelSelection;
-        std::vector<Texture2D> texturesGameOver;
-        std::vector<Texture2D> texturesPlaying;
+        std::array<texture, 5> textures;
 
         utils::state state;
         
@@ -30,7 +43,7 @@ class Menu {
         ~Menu();
         void draw();
         void update();
-        void loadTexture();
+        void loadTextures();
         utils::state getState();
 };
 

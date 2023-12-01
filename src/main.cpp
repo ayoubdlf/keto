@@ -4,7 +4,7 @@ int main() {
 
     Game::getInstance()->init();
     
-    while (!WindowShouldClose()) {
+    while (!WindowShouldClose() && Game::getInstance()->getState() != Exit) {
 
         Game::getInstance()->input();
         Game::getInstance()->update();
