@@ -50,6 +50,14 @@ void Map::update() {
 
 }
 
+std::vector<std::vector<int>>& Map::getMap() {
+    return this->map;
+}
+
+std::vector<std::vector<Tile>>& Map::getTilesMap() {
+    return this->tilesMap;
+}
+
 std::vector<Tile>& Map::getObstacles() {
     return this->obstacles;
 }
@@ -74,15 +82,12 @@ void Map::loadTiles() {
 
                 Vector2 pos = { float(j * this->textures[index].texture.width), float(i * this->textures[index].texture.height) };
                 utils::TileType type = utils::getTileTypeByCode(this->map[i][j]);
-            
+                
                 this->tilesMap[i][j] = {
+                    .texture = this->textures[index].texture,
                     .pos = pos,
                     .type = type
                 };
-
-                if(this->tilesMap[i][j].type != Air) {
-                    this->tilesMap[i][j].texture = this->textures[index].texture;
-                }
 
                 if(isPowerUp(this->tilesMap[i][j].type)) {
                     this->tilesMap[i][j].pos          = { float(j * this->textures[index].frames.width), float(i * this->textures[index].frames.height) };
@@ -100,6 +105,19 @@ void Map::loadTiles() {
                     this->obstacles.push_back(this->tilesMap[i][j]);
                 }
 
+            } else {
+                // If the tile is Air
+                if(utils::getTileTypeByCode(this->map[i][j]) == Air) {
+
+                    this->tilesMap[i][j] = {
+                        .pos = {
+                            .x = float(j * this->textures.back().texture.width),
+                            .y = float(i * this->textures.back().texture.height)
+                        },
+                        .type = Air
+                    };
+
+                }
             }
             
         }

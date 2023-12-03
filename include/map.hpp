@@ -35,6 +35,8 @@ class Map {
     public:
         Map();
         ~Map();
+        std::vector<std::vector<int>>& getMap();
+        std::vector<std::vector<Tile>>& getTilesMap();
         std::vector<Tile>& getPowerUps();
         Tile getCheckPoint();
         std::vector<Tile>& getObstacles();

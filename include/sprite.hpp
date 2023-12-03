@@ -33,7 +33,7 @@ class Sprite {
     public:
         Sprite();
         ~Sprite();
-        void setName(std::string name="keto");
+        void setName(std::string name = "keto");
         std::string getName();
         Vector2 getPosition();
         void updatePosition();

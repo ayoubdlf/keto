@@ -2,6 +2,7 @@
 #include "../include/game.hpp"
 
 Player::Player() {
+    this->name          = "keto";
     this->position      = {100.0f, 10.0f};
     this->kills         = 0;
     this->coins         = 0;
@@ -257,6 +258,7 @@ void Player::loadData(json data) {
     this->coins      = data["coins"].get<int>();
     this->position.x = data["position"]["x"].get<int>();
     this->position.y = data["position"]["y"].get<int>();
+    this->loadTextures();
 
     this->gun.loadData(data);
 }

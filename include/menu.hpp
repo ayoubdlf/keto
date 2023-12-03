@@ -9,11 +9,17 @@ using namespace utils;
 
 namespace menu {
     enum textures {
-        Start = 0,
-        Play  = 1,
-        Load  = 2,
-        Retry = 3,
-        Exit  = 4
+        Keto     = 0, // Title
+        Play     = 1,
+        Load     = 2,
+        Save     = 3,
+        Pause    = 4,
+        Skins    = 5,
+        Left     = 6,
+        Right    = 7,
+        GameOver = 8,
+        End      = 9,
+        Exit     = 10
     };
 }
 
@@ -25,22 +31,31 @@ struct texture {
 
 class Menu {
     private:
-        std::array<texture, 5> textures;
+        std::array<texture, 11> textures;
+        std::vector<texture> skins;
+        std::vector<std::string> skinsName;
 
         utils::state state;
         int counter;
+        int currentSkin;
         
         void drawStart();
-        void drawCompleted();
-        void drawLevels();
-        void drawGameOver();
         void drawPlaying();
+        void drawPause();
+        void drawSkins();
+        void drawCompleted();
+        void drawGameOver();
 
         void updateStart();
-        void updateCompleted();
-        void updateLevels();
-        void updateGameOver();
         void updatePlaying();
+        void updatePause();
+        void updateSkins();
+        void updateCompleted();
+        void updateGameOver();
+
+        void loadSkins();
+        bool isButtonHovered(texture texture);
+        bool isButtonClicked(texture texture);
     public:
         Menu();
         ~Menu();

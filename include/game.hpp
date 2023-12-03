@@ -27,6 +27,10 @@ class Game {
 
         AlertMessage alertMessage;
 
+        void initEnemies();
+        std::vector<Vector2> getAllEnemyPositions();
+        std::vector<Vector2> getPossibleEnemyPositions(int customDistance);
+
         void draw();
         void loadTextures();
         void updateCamera();

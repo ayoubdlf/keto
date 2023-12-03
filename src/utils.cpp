@@ -59,4 +59,8 @@ namespace utils {
 
         return false;
     }
+
+    bool isInsideMap(const std::vector<std::vector<Tile>>& map, int x, int y) {
+        return (y >= 0 && y < (int)map.size() && x >= 0 && x < (int)map[y].size());
+    }
 }

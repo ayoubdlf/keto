@@ -9,8 +9,10 @@
 #include <cstring>
 #include <cmath>
 #include <nlohmann/json.hpp>
+#include <filesystem>
 
-using json = nlohmann::json;
+using json   = nlohmann::json;
+namespace fs = std::filesystem;
 
 //  START DEFINES
 constexpr int   WIDTH            =   960;
@@ -23,9 +25,9 @@ constexpr float Y_VELOCITY       =   X_VELOCITY * 2.8;
 constexpr float ZOOM             =   1.5f;
 constexpr int   X_FRAME_SPEED    =   12;
 constexpr int   Y_FRAME_SPEED    =   X_FRAME_SPEED * 2;
-constexpr int   MAX_BULLETS      =   99;
+constexpr int   MAX_BULLETS      =   30;
 constexpr float BULLET_VELOCITY  =   8.0f;
-constexpr int   NB_ENEMIES       =   1;
+constexpr int   NB_ENEMIES       =   10;
 constexpr int   MAX_HEALTH       =   10;
 constexpr int   MAX_LEVELS       =   2;
 //  END DEFINES
@@ -33,12 +35,13 @@ constexpr int   MAX_LEVELS       =   2;
 namespace utils {
 
     enum state {
-        Start          = 0,
-        LevelSelection = 1,
-        GameOver       = 2,
-        Playing        = 3,
-        Completed      = 4,
-        Exit           = 5
+        Start      = 0,
+        GameOver   = 1,
+        Playing    = 2,
+        Pause      = 3,
+        Skins      = 4,
+        Completed  = 5,
+        Exit       = 6
     };
 
     struct AlertMessage {
@@ -112,6 +115,11 @@ namespace utils {
     *   Check if tile is a powerUp
     */
     bool isPowerUp(TileType type);
+
+    /*
+    *   Check if (x, y) coordonates are inside the map
+    */
+    bool isInsideMap(const std::vector<std::vector<Tile>>& map, int x, int y);
 }
 
 #endif // UTILS_HPP

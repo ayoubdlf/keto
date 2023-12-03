@@ -70,21 +70,98 @@ void Game::reset(bool resetLevels) {
 
     /* load map */
     this->map.load(this->levels.getCurrentLevelPath());
+    this->map.loadTextures(); // i'm loading map textures now, because we need access to the tilesMap inside the initEnemies method;
 
     /* Init player */
     this->player.setName();
     this->player.useGun();
     this->player.loadTextures();
 
-    /* Init player */
-    for (int i = 0; i < NB_ENEMIES; i++) {
-        this->enemies.emplace_back();
-        this->enemies[i].setName("keti");
-        this->enemies[i].setPosition({ 256.0f, 10.0f });
-    }
+    /* Init enemies */
+    this->initEnemies();
 
     /* Load textures */
     this->loadTextures();
+}
+
+
+/*
+*   Returns ALL possible enemies positions
+*/
+std::vector<Vector2> Game::getAllEnemyPositions() {
+    std::vector<std::vector<Tile>>& map = this->map.getTilesMap();
+
+    std::vector<Vector2> positions;
+
+    for (int y = 0; y < (int)map.size(); y++) {
+        for (int x = 0; x < (int)map[y].size(); x++) {
+
+            if(map[y][x].type == Air) {
+
+                bool left         = isInsideMap(map, x-1, y)   ?  (map[y][x-1].type   == Air)       : false;
+                bool right        = isInsideMap(map, x+1, y)   ?  (map[y][x+1].type   == Air)       : false;
+                bool bottom_left  = isInsideMap(map, x-1, y+1) ?  (map[y+1][x-1].type == Obstacle ) : false;
+                bool bottom_right = isInsideMap(map, x+1, y+1) ?  (map[y+1][x+1].type == Obstacle ) : false;
+                bool bottom       = isInsideMap(map, x, y+1)   ?  (map[y+1][x].type   == Obstacle ) : false;
+
+                if(left && right && bottom && bottom_left && bottom_right) {
+                    positions.push_back(map[y][x].pos);
+                }
+
+            }
+
+        }
+    }
+
+    return positions;
+}
+
+/*
+*   Returns NB_ENEMIES possible enemy positions (and every position is far away from the other ones)
+*/
+std::vector<Vector2> Game::getPossibleEnemyPositions(int customDistance) {
+    std::random_device rd;
+    std::mt19937 mt(rd());
+
+    std::vector<Vector2> positions = this->getAllEnemyPositions();
+
+    int nb_enemies = NB_ENEMIES;
+    std::vector<Vector2> available_positions;
+
+    while (nb_enemies != 0 && positions.size() != 0) {
+        std::shuffle(positions.begin(), positions.end(), mt);
+        Vector2 newPos = positions.back();
+        positions.pop_back();
+
+        // Checking if the new possible position is far away from the other ones
+        // We don't want enemies to be one next another one
+        for (int i = 0; i < (int)available_positions.size(); i++) {
+            int distance = (int)Vector2Distance(available_positions[i], newPos);
+
+            if(distance < customDistance) {
+                return available_positions;
+            }
+
+        }
+
+        available_positions.push_back(newPos);
+
+        nb_enemies -= 1;
+    }
+
+    return available_positions;
+
+}
+
+void Game::initEnemies() {
+    std::vector<Vector2> enemy_positions = this->getPossibleEnemyPositions(200);
+    
+    for (int i = 0; i < (int)enemy_positions.size(); i++) {
+        this->enemies.emplace_back();
+        this->enemies[i].setName("enemy");
+        this->enemies[i].setPosition(enemy_positions[i]);
+    }
+
 }
 
 void Game::input() {
@@ -289,20 +366,19 @@ void Game::save() {
 void Game::nextLevel() {
     this->levels.nextLevel();
 
-    this->map.reset();
-    this->player.reset();
-    this->enemies.clear();
-    this->enemies.shrink_to_fit();
+    std::string playerName = this->player.getName();
+
+    this->reset(false);
 
     this->map.load(this->levels.getCurrentLevelPath());
-    this->player.setName();
+    this->player.setName(playerName);
     this->player.useGun();
 
     this->loadTextures();
 }
 
 void Game::loadTextures() {
-    this->map.loadTextures();
+    // this->map.loadTextures();
     this->player.loadTextures();
 
     for (int i = 0; i < (int)this->enemies.size(); i++) {
