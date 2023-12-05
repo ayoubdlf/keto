@@ -18,9 +18,10 @@ Game::Game(int width, int height) {
     InitWindow(width, height, "Keto");
     InitAudioDevice();
     SetTargetFPS(60);
-    SetTextureFilter(this->font.texture, TEXTURE_FILTER_POINT);
-    // this->font  = LoadFontEx("assets/fonts/SF-Pro/SF-Pro-Text-Semibold.otf", 100, NULL, 0);
+    
     this->font  = LoadFontEx("assets/fonts/SF-Compact/SF-Compact-Text-Semibold.otf", 100, NULL, 0);
+    SetTextureFilter(this->font.texture, TEXTURE_FILTER_POINT);
+    
     this->music = LoadMusicStream("assets/sounds/bg.mp3");
     /* Setting alerts to false */
     this->alertMessage.active = false;
