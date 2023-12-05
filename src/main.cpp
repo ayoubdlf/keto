@@ -12,6 +12,7 @@ int main() {
 
     }
     
+    CloseAudioDevice();
     CloseWindow();
         
     return EXIT_SUCCESS;

@@ -16,11 +16,12 @@ Game::Game(int width, int height) {
     SetConfigFlags(FLAG_WINDOW_RESIZABLE); // Make resizing window possible
 
     InitWindow(width, height, "Keto");
+    InitAudioDevice();
     SetTargetFPS(60);
-    this->font  = LoadFontEx("assets/fonts/SF-Compact/SF-Compact-Text-Semibold.otf", 100, NULL, 0);
-    // this->font  = LoadFontEx("assets/fonts/SF-Pro/SF-Pro-Text-Semibold.otf", 100, NULL, 0);
     SetTextureFilter(this->font.texture, TEXTURE_FILTER_POINT);
-
+    // this->font  = LoadFontEx("assets/fonts/SF-Pro/SF-Pro-Text-Semibold.otf", 100, NULL, 0);
+    this->font  = LoadFontEx("assets/fonts/SF-Compact/SF-Compact-Text-Semibold.otf", 100, NULL, 0);
+    this->music = LoadMusicStream("assets/sounds/bg.mp3");
     /* Setting alerts to false */
     this->alertMessage.active = false;
     
@@ -43,6 +44,7 @@ Game::Game(int width, int height) {
     std::string targetPath = "assets/items/target.png";
     this->target = LoadTexture(targetPath.c_str());
 
+    PlayMusicStream(this->music);
     HideCursor();
 }
 
@@ -125,7 +127,8 @@ std::vector<Vector2> Game::getPossibleEnemyPositions(int customDistance) {
 
     std::vector<Vector2> positions = this->getAllEnemyPositions();
 
-    int nb_enemies = NB_ENEMIES;
+    int nb_enemies      = NB_ENEMIES;
+    bool valid_distance = true; // false if the new enemy position is near another one (based on customDistance)
     std::vector<Vector2> available_positions;
 
     while (nb_enemies != 0 && positions.size() != 0) {
@@ -133,18 +136,23 @@ std::vector<Vector2> Game::getPossibleEnemyPositions(int customDistance) {
         Vector2 newPos = positions.back();
         positions.pop_back();
 
+
         // Checking if the new possible position is far away from the other ones
         // We don't want enemies to be one next another one
         for (int i = 0; i < (int)available_positions.size(); i++) {
             int distance = (int)Vector2Distance(available_positions[i], newPos);
 
             if(distance < customDistance) {
-                return available_positions;
+                valid_distance = false;
+                continue;
             }
 
         }
 
-        available_positions.push_back(newPos);
+        if(valid_distance) {
+            // Push back a new enemy position only if its distance is far away from the other enemies
+            available_positions.push_back(newPos);
+        }
 
         nb_enemies -= 1;
     }
@@ -154,7 +162,7 @@ std::vector<Vector2> Game::getPossibleEnemyPositions(int customDistance) {
 }
 
 void Game::initEnemies() {
-    std::vector<Vector2> enemy_positions = this->getPossibleEnemyPositions(200);
+    std::vector<Vector2> enemy_positions = this->getPossibleEnemyPositions(32*6);
     
     for (int i = 0; i < (int)enemy_positions.size(); i++) {
         this->enemies.emplace_back();
@@ -226,7 +234,7 @@ void Game::update() {
     this->menu.update();
 
     if(this->menu.getState() == Playing) {
-
+        UpdateMusicStream(this->music);
         this->updateCamera();
         this->map.update();
 
@@ -275,15 +283,6 @@ void Game::drawLevelNumber() {
 }
 
 void Game::draw() {
-    BeginMode2D(this->fixedCamera);
-        if(this->menu.getState() == Playing) {
-            this->player.drawStats();
-            this->drawLevelNumber();
-        }
-
-        this->menu.draw();
-
-    EndMode2D();
 
     BeginMode2D(this->camera);
         if(this->menu.getState() == Playing) {
@@ -313,6 +312,16 @@ void Game::draw() {
 
         // Draw our custom cursor
         this->drawTarget();
+
+    EndMode2D();
+
+    BeginMode2D(this->fixedCamera);
+        if(this->menu.getState() == Playing) {
+            this->player.drawStats();
+            this->drawLevelNumber();
+        }
+
+        this->menu.draw();
 
     EndMode2D();
 }

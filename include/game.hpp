@@ -18,7 +18,7 @@ class Game {
         Levels levels;
         Map map;
         Menu menu;
-
+        Music music;
         Font font;
 
         Texture2D target; // custom cursor

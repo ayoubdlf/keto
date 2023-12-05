@@ -3,14 +3,14 @@
 
 Player::Player() {
     this->name          = "keto";
-    this->position      = {100.0f, 10.0f};
+    this->position      = {50.0f, 50.0f};
     this->kills         = 0;
     this->coins         = 0;
     this->isJumping     = false;
     this->action        = Nothing;
     this->currentFrame  = 0;
     this->framesCounter = 0;
-    this->framesSpeed   = X_FRAME_SPEED; 
+    this->framesSpeed   = X_FRAME_SPEED;
     this->direction     = Right;
 
 }
@@ -124,7 +124,7 @@ void Player::update() {
 void Player::handleInputs() {
     this->velocity    = { 0.0f, this->velocity.y };
     this->action      = Idle;
-    this->framesSpeed = X_FRAME_SPEED;
+    this->framesSpeed = (this->name == "white") ? X_FRAME_SPEED * 1.5f : X_FRAME_SPEED;
     Vector2 mouse     = GetScreenToWorld2D(GetMousePosition(), Game::getInstance()->getCamera());
     this->direction   = (mouse.x >= this->position.x) ? Right : Left;
 
@@ -150,7 +150,8 @@ void Player::handleCollisions() {
     
     // PLAYER OUTSIDE MAP
     // if((this->position.x + this->width) < 0 || this->position.x > Game::getInstance()->getMap().getWidth() || (this->position.y + this->height) < 0 || this->position.y > Game::getInstance()->getMap().getHeight())
-    if(this->position.y - this->height * 6 > Game::getInstance()->getMap().getHeight()) {
+
+    if(this->position.y > Game::getInstance()->getMap().getHeight()) {
         this->health = 0;
     }
 

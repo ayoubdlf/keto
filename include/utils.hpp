@@ -27,9 +27,8 @@ constexpr int   X_FRAME_SPEED    =   12;
 constexpr int   Y_FRAME_SPEED    =   X_FRAME_SPEED * 2;
 constexpr int   MAX_BULLETS      =   30;
 constexpr float BULLET_VELOCITY  =   8.0f;
-constexpr int   NB_ENEMIES       =   10;
+constexpr int   NB_ENEMIES       =   20;
 constexpr int   MAX_HEALTH       =   10;
-constexpr int   MAX_LEVELS       =   2;
 //  END DEFINES
 
 namespace utils {

@@ -125,7 +125,6 @@ void Map::loadTiles() {
 
     this->mapWidth  = this->tilesMap[0].size() * this->obstacles[0].texture.width;
     this->mapHeight = this->tilesMap.size()    * this->obstacles[0].texture.height;
-
 }
 
 void Map::loadTextures() {

@@ -416,7 +416,7 @@ void Menu::loadSkins() {
             this->skins.push_back(skin);
             this->skinsName.push_back(entry.path().filename().string());
         }
-    }    
+    }
 }
 
 utils::state Menu::getState() {

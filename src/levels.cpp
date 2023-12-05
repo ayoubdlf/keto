@@ -1,17 +1,36 @@
 #include "../include/levels.hpp"
 
 Levels::Levels() {
-    this->levels = new Level;
+    this->levels    = new Level;
+    this->getLastLevelNumber(); // store last level number into this->lastLevel
 }
 
 Levels::~Levels() {
-    // TODO: FREE LEVELS TREE
+    // TODO: FREE LEVELS TREE ?
+}
+
+/*
+*   Return last level number
+*/
+void Levels::getLastLevelNumber() {
+    // Fetch the last level number from the levels folder
+    std::vector<int> levelsNumber;
+
+    for (fs::directory_entry entry : fs::directory_iterator("assets/levels")) {
+        if(entry.path().filename().string()[0] != '.') {
+            levelsNumber.push_back(std::stoi(entry.path().filename().string()));
+        }
+    }
+
+    std::sort(levelsNumber.begin(), levelsNumber.end());
+
+    this->lastLevel = levelsNumber.back();
 }
 
 Level* Levels::createLevels(int level = 1, int lastLevel = 1) {
     Level* levels = new Level;
 
-    if(level != MAX_LEVELS + 1) {
+    if(level != this->lastLevel + 1) {
         levels->level      = level;
         levels->completed = (level < lastLevel) ? true : false;
         levels->next_level = this->createLevels(level + 1, lastLevel);
@@ -92,5 +111,5 @@ int Levels::getCurrentLevel(Level* level) {
 }
 
 bool Levels::isLastLevel() {
-    return this->getCurrentLevel() == MAX_LEVELS;
+    return this->getCurrentLevel() == this->lastLevel;
 }

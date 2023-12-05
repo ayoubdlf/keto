@@ -15,6 +15,7 @@ struct Level {
 class Levels {
     private:
         Level* levels;
+        int lastLevel;
         Level* createLevels(int level, int lastLevel);
     public:
         Levels();
@@ -25,6 +26,7 @@ class Levels {
         std::string getCurrentLevelPath(Level* level = nullptr);
         int getCurrentLevel(Level* level = nullptr);
         bool isLastLevel();
+        void getLastLevelNumber();
 };
 
 
