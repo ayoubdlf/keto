@@ -6,7 +6,14 @@ Levels::Levels() {
 }
 
 Levels::~Levels() {
-    // TODO: FREE LEVELS TREE ?
+    this->clean(this->levels);
+}
+
+void Levels::clean(Level* level) {
+    if (level == nullptr)             { return; }
+    if (level->next_level != nullptr) { this->clean(level->next_level); }
+
+    free(level);
 }
 
 /*

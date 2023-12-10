@@ -132,7 +132,6 @@ void Player::handleInputs() {
     if(IsKeyDown(KEY_LEFT))                   { this->velocity.x = -X_VELOCITY * DELTA * SCALE; this->action = Run;  this->direction = Left;  }
     if(IsKeyDown(KEY_UP) && !this->isJumping) { this->velocity.y = -Y_VELOCITY * DELTA * SCALE; this->action = Jump; this->isJumping = true; this->framesSpeed = Y_FRAME_SPEED; }
 
-    // TODO: add save icon tho'
     if(IsKeyDown(KEY_LEFT_CONTROL) && IsKeyPressed(KEY_S)) {
         Game::getInstance()->save();
         Game::getInstance()->alert("SAVED");

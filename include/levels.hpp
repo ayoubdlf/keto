@@ -20,6 +20,7 @@ class Levels {
     public:
         Levels();
         ~Levels();
+        void clean(Level* level);
         void create();
         void load();
         void nextLevel(Level* level = nullptr);
