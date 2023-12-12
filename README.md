@@ -46,5 +46,5 @@ Run it and have fun! 👾
 
 ## Authors
 
-- [Ayoub](https://github.com/ayoub-org)
-- Safir
+- DELLOUFI Ayoub
+- KABIDI Safir
