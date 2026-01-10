@@ -1,4 +1,8 @@
-**/.DS_Store
-build/*
-.vscode/*
-data.json
+# Build directory
+build/
+
+# IDE
+.vscode/
+
+# macOS
+.DS_Store
