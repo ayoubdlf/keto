@@ -3,9 +3,9 @@
 A fast-paced 2D platformer game built from scratch in C++ using the Raylib graphics library. Navigate through challenging levels, defeat enemies, and test your reflexes in this action-packed adventure.
 
 <div align="center">
-  <img src="screenshot/screenshot1.png" alt="Keto Game Screenshot" height="200">
-  <img src="screenshot/screenshot2.png" alt="Keto Game Screenshot" height="200">
-  <img src="screenshot/screenshot3.png" alt="Keto Game Screenshot" height="200">
+  <img src="screenshots/screenshot1.png" alt="Keto Game Screenshot" height="200">
+  <img src="screenshots/screenshot2.png" alt="Keto Game Screenshot" height="200">
+  <img src="screenshots/screenshot3.png" alt="Keto Game Screenshot" height="200">
 </div>
 
 
